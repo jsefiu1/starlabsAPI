@@ -1,3 +1,5 @@
 uvicorn
 fastapi
 pre-commit
+pip install psycopg2
+pre-commit run -a
