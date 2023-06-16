@@ -1,0 +1,23 @@
+version: '4.17.0'
+services:
+  app:
+    build: .
+    ports:
+      - '8000:8000'
+    depends_on:
+      - postgres
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=joni
+      - POSTGRES_DB=fastapi
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=joni
+      - POSTGRES_DB=fastapi
+    volumes:
+      - ./data:/var/lib/postgresql/data
