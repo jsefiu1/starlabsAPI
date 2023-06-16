@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from app.utils.database import test_db_connection
 
