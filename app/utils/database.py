@@ -12,9 +12,9 @@ POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 if POSTGRES_PASSWORD is None:
     print("You should provide a db-password in the .env file")
 
-POSTGRES_NAME = os.getenv("POSTGRES_NAME", "fastapi")
+POSTGRES_DB_NAME = os.getenv("POSTGRES_DB_NAME", "fastapi")
 
-DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_NAME}"
+DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB_NAME}"
 
 
 engine = create_engine(DATABASE_URL)
