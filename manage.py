@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from app.utils.database import test_db_connection
+import uvicorn
+
 
 app = FastAPI()
 
@@ -11,10 +13,7 @@ def read_root():
 
 @app.get("/test-db")
 def test_database_connection():
-    if test_db_connection():
-        return {"message": "Database connection successful"}
-    else:
-        return {"message": "Error connecting to the database"}
+    return test_db_connection()
 
 
 if __name__ == "__main__":
