@@ -2,7 +2,7 @@ import os
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import yaml
-from fastapi import FastAPI
+__all__ = ['test_db_connection']
 
 load_dotenv()
 
@@ -26,23 +26,13 @@ DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NA
 
 engine = create_engine(DATABASE_URL)
 
-app = FastAPI()
 
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get("/test-db")
 def test_db_connection():
     try:
-        with engine.connect() as connection:
-            connection.execute("SELECT 1")
-        return {"message": "Database connection successful"}
+        with engine.connect():
+            return True
     except Exception as e:
-        return {"message": f"Error connecting to the database: {str(e)}"}
+        print(f"Database connection error: {str(e)}")
+        return False
 
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+        # http://localhost:8080/
