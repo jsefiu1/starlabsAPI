@@ -4,11 +4,9 @@ from app.utils.database import test_db_connection
 
 app = FastAPI()
 
-
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
 
 @app.get("/test-db")
 def test_database_connection():
@@ -17,6 +15,5 @@ def test_database_connection():
     else:
         return {"message": "Error connecting to the database"}
 
-
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
