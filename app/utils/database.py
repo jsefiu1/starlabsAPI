@@ -2,6 +2,7 @@ import os
 from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
+from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
@@ -18,6 +19,8 @@ DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST
 
 
 engine = create_engine(DATABASE_URL)
+
+session = sessionmaker(bind=engine)()
 
 
 def test_db_connection():
