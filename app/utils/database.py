@@ -27,12 +27,10 @@ def test_db_connection():
     try:
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
-        return {
-            "message": "Database connection successful",
-            "database_url": DATABASE_URL,
-        }
+        return True
+
     except Exception as e:
-        return {
-            "message": f"Error connecting to the database: {str(e)}",
-            "database_url": DATABASE_URL,
-        }
+        print(f"Database connection error: {str(e)}")
+        return False
+
+        # http://localhost:8080/

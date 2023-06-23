@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from app.utils.database import test_db_connection
 import uvicorn
@@ -23,4 +24,4 @@ app.include_router(telegrafi.router)
 Base.metadata.create_all(engine)
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8080)
