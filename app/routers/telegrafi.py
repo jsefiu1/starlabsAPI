@@ -7,7 +7,7 @@ router = APIRouter(prefix="/telegrafi")
 
 
 @router.get("/scrape")
-async def telegrafi_test(url_path: str):
+async def scrape_telegrafi(url_path: str):
     telegrafi_scraper = TelegrafiScraper(base_url="https://telegrafi.com")
     results = telegrafi_scraper.scrape(url_path=url_path)
 
@@ -16,9 +16,19 @@ async def telegrafi_test(url_path: str):
             name=result["name"],
             details_link=result["details_link"],
             image_link=result["image_link"],
+            date_posted=result["date_posted"],
         )
 
         session.add(article)
         session.commit()
 
+    return results
+
+
+@router.get("/data")
+async def telegrafi_data():
+    articles = session.query(Article)
+    results = []
+    for article in articles:
+        results.append(article.__dict__)
     return results

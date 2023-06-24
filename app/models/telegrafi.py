@@ -1,5 +1,4 @@
-from sqlalchemy import Column, Integer, String
-from app.utils.database import engine
+from sqlalchemy import Column, Integer, String, DateTime
 from app.models import Base
 
 
@@ -10,3 +9,4 @@ class Article(Base):
     name = Column(String(200))
     details_link = Column(String(500))
     image_link = Column(String(500))
+    date_posted = Column(DateTime)
