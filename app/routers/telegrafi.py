@@ -7,9 +7,9 @@ router = APIRouter(prefix="/telegrafi")
 
 
 @router.get("/scrape")
-async def scrape_telegrafi(url_path: str):
+async def scrape_telegrafi(url_path: str, page_numbers: int):
     telegrafi_scraper = TelegrafiScraper(base_url="https://telegrafi.com")
-    results = telegrafi_scraper.scrape(url_path=url_path)
+    results = telegrafi_scraper.scrape(url_path=url_path, page_numbers=page_numbers)
 
     for result in results:
         article = Article(
