@@ -8,3 +8,4 @@ class Product(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(200))
     price = Column(String(200))
+    details_link = Column(String(500))
