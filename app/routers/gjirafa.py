@@ -2,7 +2,6 @@ from fastapi import APIRouter, Query
 from app.models.gjirafa import Product
 from app.scrapers.gjirafa import GjirafaScraper
 from app.utils.database import session
-from decimal import Decimal 
 
 router = APIRouter(prefix="/gjirafa")
 
