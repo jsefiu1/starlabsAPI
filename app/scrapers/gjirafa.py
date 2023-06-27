@@ -1,6 +1,9 @@
 from app.scrapers.base import Scraper
+from app.utils.database import session
+from app.models.gjirafa import Product
 from bs4 import BeautifulSoup
 import requests
+import logging
 
 class GjirafaScraper(Scraper):
     def __init__(self, base_url: str):
@@ -33,4 +36,19 @@ class GjirafaScraper(Scraper):
                 
                 results.append({"name": name, "price": price or price_offer or None, "details_link": details_link})
 
-        return results
+                self.save_to_db(results)
+
+            return results
+            
+    def save_to_db(self, results):
+        try:
+            for result in results:
+                product = Product(
+                    name=result["name"],
+                    price=result["price"],
+                    details_link=result["details_link"],
+                )
+                session.add(product)
+            session.commit()
+        except Exception as e:
+            logging.error(f"Error in saving data to the database: {e}")
