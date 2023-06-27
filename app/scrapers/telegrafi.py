@@ -1,7 +1,10 @@
 from app.scrapers.base import Scraper
 from bs4 import BeautifulSoup
 import requests
+import logging
 from app.utils.time import string_ago_to_datetime
+from app.models.telegrafi import Article
+from app.utils.database import session
 
 
 class TelegrafiScraper(Scraper):
@@ -44,3 +47,17 @@ class TelegrafiScraper(Scraper):
 
                 results.append(data)
         return results
+
+    def insert_to_DB(results):
+        try:
+            for result in results:
+                article = Article(
+                    name=result["name"],
+                    details_link=result["details_link"],
+                    image_link=result["image_link"],
+                    date_posted=result["date_posted"],
+                )
+                session.add(article)
+                session.commit()
+        except Exception as e:
+            logging.error(f"Error in saving data to the database: {e}")

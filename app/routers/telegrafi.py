@@ -13,18 +13,7 @@ router = APIRouter(prefix="/telegrafi")
 async def scrape_telegrafi(url_path: str, page_numbers: int):
     telegrafi_scraper = TelegrafiScraper(base_url="https://telegrafi.com")
     results = telegrafi_scraper.scrape(url_path=url_path, page_numbers=page_numbers)
-
-    for result in results:
-        article = Article(
-            name=result["name"],
-            details_link=result["details_link"],
-            image_link=result["image_link"],
-            date_posted=result["date_posted"],
-        )
-
-        session.add(article)
-        session.commit()
-
+    TelegrafiScraper.insert_to_DB(results=results)
     return results
 
 
