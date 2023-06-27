@@ -22,16 +22,3 @@ async def gjirafa_data():
     for product in products:
         results.append(product.__dict__)
     return results
-
-    # def save_to_db(self, results):
-    #     for result in results:
-    #         product = Product(
-    #             name=result["name"],
-    #             price=result["price"],
-    #             details_link=result["details_link"],
-    #     )
-        
-        # session.add(product)
-        # session.commit()
-
-    # return results
