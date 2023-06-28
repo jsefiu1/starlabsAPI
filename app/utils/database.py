@@ -1,23 +1,26 @@
 import os
+from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
-from sqlalchemy.sql import text
-import yaml
-
-__all__ = ["test_db_connection"]
+from sqlalchemy.orm import sessionmaker
 
 load_dotenv()
 
-DB_HOST = os.getenv("POSTGRES_HOST", "localhost")
-DB_PORT = os.getenv("POSTGRES_PORT", "5432")
-DB_USER = os.getenv("POSTGRES_USER", "postgres")
-DB_PASSWORD = os.getenv("POSTGRES_PASSWORD", "joni")
-DB_NAME = os.getenv("POSTGRES_DB", "fastapi")
+POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
+if POSTGRES_PASSWORD is None:
+    print("You should provide a db-password in the .env file")
 
+POSTGRES_DB_NAME = os.getenv("POSTGRES_DB_NAME", "fastapi")
 
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB_NAME}"
+
 
 engine = create_engine(DATABASE_URL)
+
+session = sessionmaker(bind=engine)()
 
 
 def test_db_connection():
