@@ -2,7 +2,7 @@ import uvicorn
 from fastapi import FastAPI
 from app.utils.database import test_db_connection
 import uvicorn
-from app.routers import telegrafi, gjirafa
+from app.routers import telegrafi, gjirafa,kosovajob
 from app.models import Base
 from app.models.gjirafa import Product
 
@@ -24,6 +24,9 @@ def test_database_connection():
 app.include_router(telegrafi.router)
 
 app.include_router(gjirafa.router)
+
+
+app.include_router(kosovajob.router)
 
 Base.metadata.create_all(engine)
 
