@@ -57,6 +57,10 @@ class TelegrafiScraper(Scraper):
                     image_link=result["image_link"],
                     date_posted=result["date_posted"],
                 )
+
+                if session.query(Article).filter_by(name=article.name).first():
+                    continue
+
                 session.add(article)
                 session.commit()
         except Exception as e:
