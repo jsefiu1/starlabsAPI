@@ -53,7 +53,7 @@
             height: calc(100vh - 40px);
         }
 
-        .telegrafi-view {
+        .content-view {
             height: 100%;
             width: 100%;
             border: none;
@@ -66,10 +66,10 @@
                 e.preventDefault();
                 var url = $(this).attr('href');
                 if (url === '/home') {
-                    $('.content').html('');  // Clear the content
+                    $('.content').html('');
                     return;
                 }
-                $('.content').html('<iframe class="telegrafi-view" src="' + url + '"></iframe>');
+                $('.content').html('<iframe class="content-view" src="' + url + '"></iframe>');
             });
         });
     </script>
@@ -80,12 +80,11 @@
         <ul>
             <li><a href="/home" class="sidebar-link">Home</a></li>
             <li><a href="/telegrafi/view" class="sidebar-link">Telegrafi</a></li>
-            <!-- Add more sidebar items as needed -->
         </ul>
     </div>
 
     <div class="content">
-        <!-- The initial content will be loaded here -->
+
     </div>
 </body>
 </html>
