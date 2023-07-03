@@ -1,6 +1,6 @@
 from app.scrapers.base import Scraper
 from app.utils.database import session
-from app.models.models import Product
+from app.models.gjirafa import Product
 from bs4 import BeautifulSoup
 import requests
 import logging

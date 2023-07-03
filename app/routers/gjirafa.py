@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 from fastapi import Query
-from app.models.models import Product
+from app.models.gjirafa import Product
 from app.scrapers.gjirafa import GjirafaScraper
 from app.utils.database import session
 
