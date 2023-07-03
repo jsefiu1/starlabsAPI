@@ -1,5 +1,6 @@
 from app.scrapers.base import Scraper
 from bs4 import BeautifulSoup
+from datetime import datetime, timedelta
 import requests
 import logging
 from app.utils.time import string_ago_to_datetime
@@ -38,11 +39,13 @@ class TelegrafiScraper(Scraper):
                 image_link = image_item.get("src") if image_item else "No link found"
                 time_ago = article.find("div", class_="post_date_info").text
                 date_posted = string_ago_to_datetime(time_ago)
+                date_scraped = datetime.now()
                 data = {
                     "name": name,
                     "details_link": details_link,
                     "image_link": image_link,
                     "date_posted": date_posted,
+                    "date_scraped": date_scraped,
                 }
 
                 results.append(data)
@@ -56,6 +59,7 @@ class TelegrafiScraper(Scraper):
                     details_link=result["details_link"],
                     image_link=result["image_link"],
                     date_posted=result["date_posted"],
+                    date_scraped=result["date_scraped"],
                 )
 
                 if session.query(Article).filter_by(name=article.name).first():

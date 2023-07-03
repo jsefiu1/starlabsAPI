@@ -69,12 +69,17 @@
         .pagination a:hover {
             background-color: #ddd;
         }
+        .title {
+            max-width: 700px;
+            overflow: break-word;
+            text-overflow: ellipsis;
+        }
     </style>
 </head>
 <body>
     <h1>Telegrafi Articles</h1>
 
-    <form class="search-form" action="/telegrafi/view" method="get">
+    <form class="search-form" action="{{ url_for('telegrafi_view') }}" method="get">
         <label for="title_contains">Title:</label>
         <input type="text" id="title_contains" name="title_contains" placeholder="Enter title...">
 
@@ -94,15 +99,17 @@
                 <th>Title</th>
                 <th>Link</th>
                 <th>Date Posted</th>
+                <th>Scraping Date</th>
             </tr>
         </thead>
         <tbody>
             {% for article in results %}
             <tr>
                 <td>{{ article['id'] }}</td>
-                <td>{{ article['name'] }}</td>
+                <td><div class="title">{{ article['name'] }}</div></td>
                 <td><a href="{{ article['details_link'] }}" target="_blank">Link</a></td>
                 <td>{{ article['date_posted'].strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ article['date_scraped'].strftime('%Y-%m-%d %H:%M') }}</td>
             </tr>
             {% endfor %}
         </tbody>

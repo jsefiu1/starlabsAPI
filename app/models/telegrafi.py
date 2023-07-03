@@ -10,3 +10,4 @@ class Article(Base):
     details_link = Column(String(500))
     image_link = Column(String(500))
     date_posted = Column(DateTime)
+    date_scraped = Column(DateTime)
