@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="445b2410-64c5-44cf-97d6-1cc01cd4b4cf" name="Changes" comment="" />
+    <list default="true" id="445b2410-64c5-44cf-97d6-1cc01cd4b4cf" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/kosovajob.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/kosovajob.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/routers/kosovajob.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/routers/kosovajob.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/scrapers/kosovajob.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/scrapers/kosovajob.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -113,6 +119,11 @@
       <workItem from="1687989091544" duration="3202000" />
       <workItem from="1688023543003" duration="4303000" />
       <workItem from="1688028233700" duration="172000" />
+      <workItem from="1688050415357" duration="4000" />
+      <workItem from="1688132656338" duration="145000" />
+      <workItem from="1688137292941" duration="12000" />
+      <workItem from="1688151653043" duration="476000" />
+      <workItem from="1688237589315" duration="27000" />
     </task>
     <servers />
   </component>
