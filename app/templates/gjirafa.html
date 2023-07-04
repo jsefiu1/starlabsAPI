@@ -80,25 +80,39 @@
         <label for="title_contains">Title:</label>
         <input type="text" id="title_contains" name="title_contains" placeholder="Enter title...">
     
-        <input type="checkbox" id="under_20" name="under_20" {% if under_20 %}checked{% endif %}>
+        <input type="checkbox" id="under_20" name="price_range" value="under_20" {% if under_20 %}checked{% endif %}>
         <label for="under_20">Under $20:</label>
     
-        <input type="checkbox" id="under_50" name="under_50" {% if under_50 %}checked{% endif %}>
+        <input type="checkbox" id="under_50" name="price_range" value="under_50" {% if under_50 %}checked{% endif %}>
         <label for="under_50">Under $50:</label>
     
-        <input type="checkbox" id="under_100" name="under_100" {% if under_100 %}checked{% endif %}>
+        <input type="checkbox" id="under_100" name="price_range" value="under_100" {% if under_100 %}checked{% endif %}>
         <label for="under_100">Under $100:</label>
     
-        <input type="checkbox" id="under_200" name="under_200" {% if under_200 %}checked{% endif %}>
+        <input type="checkbox" id="under_200" name="price_range" value="under_200" {% if under_200 %}checked{% endif %}>
         <label for="under_200">Under $200:</label>
     
         <button type="submit">Search</button>
     </form>
-    
+    <script>
+        const checkboxes = document.querySelectorAll('input[name="price_range"]');
+        checkboxes.forEach((checkbox) => {
+            checkbox.addEventListener('change', () => {
+                if (checkbox.checked) {
+                    checkboxes.forEach((otherCheckbox) => {
+                        if (otherCheckbox !== checkbox) {
+                            otherCheckbox.checked = false;
+                        }
+                    });
+                }
+            });
+        });
+    </script>
 
     <table>
         <thead>
             <tr>
+                <th>ID</th>
                 <th>Title</th>
                 <th>Description</th>
                 <th>Price</th>
@@ -108,6 +122,7 @@
         <tbody>
             {% for product in results %}
             <tr>
+                <td>{{ product.id }}</td>
                 <td class="title" >{{ product.name }}</td>
                 <td><a href="{{product.details_link}}" target="_blank">Products Details Link</a></td>
                 <td>{{ product.price }} €</td>
