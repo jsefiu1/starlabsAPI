@@ -28,7 +28,7 @@ def test_db_connection():
         with engine.connect() as connection:
             connection.execute(text("SELECT 1"))
         return True
-
+        
     except Exception as e:
         print(f"Database connection error: {str(e)}")
         return False
