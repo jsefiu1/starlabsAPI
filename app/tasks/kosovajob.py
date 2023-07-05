@@ -2,7 +2,7 @@ import requests
 from app.utils.tasks import scheduler
 
 
-@scheduler.scheduled_job("interval", seconds=10)
+@scheduler.scheduled_job("interval", hours=6)
 def kosovajob_scrape():
     requests.get(
         url="http://localhost:8000/kosovajobs/scrape",
