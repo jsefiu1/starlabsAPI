@@ -25,27 +25,15 @@ async def gjirafa_data(
     title_contains: str = None,
     offset: int = None,
     limit: int = None,
-    under_20: bool = None,
-    under_50: bool = None,
-    under_100: bool = None,
-    under_200: bool = None,
+    limit_price: float = None,
 ):
     products = session.query(Product)
 
     if title_contains:
         products = products.filter(Product.name.ilike(f"%{title_contains}%"))
-
-    if under_20:
-        products = products.filter(Product.price < Decimal(20))
-
-    if under_50:
-        products = products.filter(Product.price < Decimal(50))
-
-    if under_100:
-        products = products.filter(Product.price < Decimal(100))
-
-    if under_200:
-        products = products.filter(Product.price < Decimal(200))
+    
+    if limit_price is not None:
+        products = products.filter(Product.price < limit_price)
 
     total_products = products.count()
     if total_products > 0:
@@ -65,10 +53,7 @@ async def gjirafa_data(
 async def gjirafa_view(
     request: Request,
     title_contains: str = None,
-    under_20: bool = None,
-    under_50: bool = None,
-    under_100: bool = None,
-    under_200: bool = None,
+    limit_price: float = None,
     page: int = 1,
 ):
     offset = (page - 1) * limit
@@ -77,10 +62,7 @@ async def gjirafa_view(
         title_contains=title_contains,
         offset=offset,
         limit=limit,
-        under_20=under_20,
-        under_50=under_50,
-        under_100=under_100,
-        under_200=under_200,
+        limit_price=limit_price,
     )
     results = result['results']
     total_pages = result["total_pages"]
@@ -93,9 +75,6 @@ async def gjirafa_view(
             "current_page": page,
             "total_pages": total_pages,
             "title_contains": title_contains,
-            "under_20": under_20,
-            "under_50": under_50,
-            "under_100": under_100,
-            "under_200": under_200,
+            "limit_price": limit_price,
         },
     )
