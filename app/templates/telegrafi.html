@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Telegrafi View</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid #ccc;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ccc;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .search-form {
+            margin-bottom: 20px;
+        }
+        .search-form label {
+            margin-right: 10px;
+        }
+        .search-form input[type="text"],
+        .search-form input[type="date"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .search-form button[type="submit"] {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .search-form button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .pagination {
+        margin-top: 20px;
+        text-align: center;
+        }
+
+        .pagination a {
+            display: inline-block;
+            margin: 0 5px;
+            padding: 8px 12px;
+            background-color: #f2f2f2;
+            color: #333;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .pagination a.current {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .pagination a:hover {
+            background-color: #ddd;
+        }
+        .title {
+            max-width: 700px;
+            overflow: break-word;
+            text-overflow: ellipsis;
+        }
+    </style>
+</head>
+<body>
+    <h1>Telegrafi Articles</h1>
+
+    <form class="search-form" action="{{ url_for('telegrafi_view') }}" method="get">
+        <label for="title_contains">Title:</label>
+        <input type="text" id="title_contains" name="title_contains" placeholder="Enter title...">
+
+        <label for="date_from">Date From:</label>
+        <input type="date" id="date_from" name="date_from">
+
+        <label for="date_to">Date To:</label>
+        <input type="date" id="date_to" name="date_to">
+
+        <button type="submit">Search</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Link</th>
+                <th>Date Posted</th>
+                <th>Scraping Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for article in results %}
+            <tr>
+                <td>{{ article['id'] }}</td>
+                <td><div class="title">{{ article['name'] }}</div></td>
+                <td><a href="{{ article['details_link'] }}" target="_blank">Link</a></td>
+                <td>{{ article['date_posted'].strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ article['date_scraped'].strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination">
+        {% if current_page > 1 %}
+            <a href="/telegrafi/view?page={{ current_page - 1 }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">Previous</a>
+        {% endif %}
+
+        {% if total_pages <= 7 %}
+            {% for page in range(1, total_pages + 1) %}
+                {% if page == current_page %}
+                    <a href="/telegrafi/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="current">{{ page }}</a>
+                {% else %}
+                    <a href="/telegrafi/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">{{ page }}</a>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            {% if current_page <= 4 %}
+                {% for page in range(1, current_page + 3) %}
+                    {% if page == current_page %}
+                        <a href="/telegrafi/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="current">{{ page }}</a>
+                    {% else %}
+                        <a href="/telegrafi/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">{{ page }}</a>
+                    {% endif %}
+                {% endfor %}
+                ...
+                <a href="/telegrafi/view?page={{ total_pages }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">{{ total_pages }}</a>
+            {% elif current_page > total_pages - 2  %}
+                <a href="/telegrafi/view?page=1{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">1</a>
+                ...
+                {% for page in range(total_pages - 2, total_pages + 1) %}
+                    {% if page == current_page %}
+                        <a href="/telegrafi/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="current">{{ page }}</a>
+                    {% else %}
+                        <a href="/telegrafi/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">{{ page }}</a>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <a href="/telegrafi/view?page=1{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">1</a>
+                ...
+                {% for page in range(current_page - 1, current_page + 2) %}
+                    {% if page == current_page %}
+                        <a href="/telegrafi/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}" class="current">{{ page }}</a>
+                    {% else %}
+                        <a href="/telegrafi/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">{{ page }}</a>
+                    {% endif %}
+                {% endfor %}
+                ...
+                <a href="/telegrafi/view?page={{ total_pages }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">{{ total_pages }}</a>
+            {% endif %}
+        {% endif %}
+
+        {% if current_page < total_pages %}
+            <a href="/telegrafi/view?page={{ current_page + 1 }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}">Next</a>
+        {% endif %}
+    </div>
+
+
+</body>
+</html>

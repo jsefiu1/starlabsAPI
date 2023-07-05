@@ -7,6 +7,7 @@ from app.utils.database import engine
 
 app = FastAPI()
 
+
 @app.get("/test-db")
 def test_database_connection():
     return test_db_connection()
