@@ -10,6 +10,7 @@ async def home(request: Request):
     navigation_items = [
         {"name": "Dashboard", "url": "/home"},
         {"name": "Telegrafi", "url": "/telegrafi/view"},
+        {"name": "Gjirafa", "url": "/gjirafa/view"},
         # Add more navigation items as needed
     ]
     return templates.TemplateResponse(
