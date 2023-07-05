@@ -12,6 +12,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12345
       POSTGRES_DB_NAME: fastapi
+      TZ: "Europe/Tirane"
+
 
   postgres:
     image: postgres
@@ -22,6 +24,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 12345
       POSTGRES_DB: fastapi
+      TZ: "Europe/Tirane"
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
