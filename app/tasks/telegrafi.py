@@ -1,15 +1,9 @@
 import requests
-from fastapi_scheduler import SchedulerAdmin
-from fastapi_amis_admin.admin.settings import Settings
-from fastapi_amis_admin.admin.site import AdminSite
-from app.utils.database import DATABASE_URL
-
-site = AdminSite(settings=Settings(database_url=DATABASE_URL))
-scheduler = SchedulerAdmin.bind(site)
+from app.utils.tasks import scheduler
 
 
-@scheduler.scheduled_job("interval", hours=6)
-def telegrafi1():
+@scheduler.scheduled_job("interval", seconds=10)
+def telegrafi_scrape():
     url_paths = [
         "/lajme/",
         "/sport/",
@@ -26,7 +20,7 @@ def telegrafi1():
         "/bote/",
     ]
     for url_path in url_paths:
-        response = requests.get(
+        requests.get(
             url="http://localhost:8000/telegrafi/scrape",
             params={"url_path": url_path, "page_numbers": 1},
         )
