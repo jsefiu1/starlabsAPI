@@ -20,16 +20,44 @@ def scrape_and_insert(url_path: str):
     return results
 
 @router.get('/data')
-def kosovajob_data(title: str = Query(None),city: str = Query(None)):
+def kosovajob_data(
+    title: str = Query(None),
+    city: str = Query(None),
+    offset: int = Query(None),
+    limit: int = Query(None)
+):
+    query = session.query(Job)
+
     if title and city:
-        jobs = session.query(Job).filter(func.lower(Job.title).contains(title.lower()), func.lower(Job.city).contains(city.lower())).all()
+        query = query.filter(
+            func.lower(Job.title).contains(title.lower()),
+            func.lower(Job.city).contains(city.lower())
+        )
     elif title:
-        jobs = session.query(Job).filter(func.lower(Job.title).contains(title.lower())).all()
+        query = query.filter(func.lower(Job.title).contains(title.lower()))
     elif city:
-        jobs = session.query(Job).filter(func.lower(Job.city).contains(city.lower())).all()
+        query = query.filter(func.lower(Job.city).contains(city.lower()))
+
+    total_jobs = query.count()
+    if total_jobs > 0:
+        if limit:
+            total_pages = int(ceil(total_jobs / limit))
+        else:
+            total_pages = 1
     else:
-        jobs = session.query(Job).all()
-    return jobs
+        total_pages = 0
+
+    if offset is not None:
+        query = query.offset(offset * limit)
+
+    if limit is not None:
+        query = query.limit(limit)
+
+    results = [job.__dict__ for job in query]
+
+    return {"results": results, "total_pages": total_pages}
+
+
 
 
 @router.get('/view')
@@ -38,7 +66,7 @@ def dashboard(
     jobtitle: Optional[str] ='',
     city: Optional[str] = '',
     page: int = Query(1, ge=1), 
-    page_size: int = Query(10, ge=1, le=100), 
+    page_size: int = Query(10, ge=1), 
 ):
     query = session.query(Job)
     if jobtitle and city:

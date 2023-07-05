@@ -45,6 +45,8 @@ class KosovajobScraper(Scraper):
                 expires_date=result['expires_date'],
                 date_of_scrape=result['date_of_scrape']
             )
+            if session.query(Job).filter_by(title=job.title).first():
+                    continue
             session.add(job)
 
         session.commit()

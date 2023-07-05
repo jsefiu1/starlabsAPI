@@ -14,12 +14,11 @@
             align-items: center;
             margin-bottom: 20px;
             margin-top: 15px;
+            padding-left: 25%;
+            padding-right: 25%;
         }
 
-        form h2 {
-            margin: 0;
-            margin-right: 10px;
-        }
+       
 
         form input[type="text"],
     form select {
@@ -163,7 +162,8 @@
     </style>
 </head>
 <body>
-<form action="/kosovajobs/view" method="get">
+<form action="/kosovajobs/view" method="get" style="padding-left: 25%;padding-right: 25%;">
+    <h1 style="padding-right: 40px">Kosovajobs data</h1>
     <input type="text" name="jobtitle" placeholder="Enter job title" >
     <select name="city">
         <option value="">Select a city</option>
