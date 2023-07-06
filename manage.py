@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from app.utils.database import test_db_connection
 import uvicorn
-from app.routers import telegrafi, gjirafa,kosovajob,home
+from app.routers import telegrafi, gjirafa,kosovajob,douglas, home
 from app.models import Base
 from app.utils.database import engine
 
@@ -19,6 +19,8 @@ app.include_router(gjirafa.router)
 app.include_router(telegrafi.router)
 
 app.include_router(kosovajob.router)
+
+app.include_router(douglas.router)
 
 Base.metadata.create_all(engine)
 
