@@ -35,7 +35,7 @@ class DouglasScraper(Scraper):
     def save_to_db( results):
         try:
             for result in results:
-                existing_brand = session.query(Brand).filter_by(name=result["name"]).first()
+                existing_brand = session.query(Brand).filter_by(details_link=result["details_link"]).first()
                 if existing_brand is None:
                     brands = Brand(
                         name=result["name"],
