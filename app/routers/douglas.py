@@ -20,13 +20,13 @@ async def douglas_scrape(url_path: str= Query(default="Make-up/"), page_numbers:
 
 @router.get("/data")
 async def douglas_data(
-    name_contains: str = None,
+    category_contains: str = None,
     offset: int = None,
     limit: int = None,
 ):
     brands = session.query(Brand)
-    if name_contains:
-        brands = brands.filter(Brand.name.ilike(f"%{name_contains}%"))
+    if category_contains:
+        brands = brands.filter(Brand.category.ilike(f"%{category_contains}%"))
     total_brands = brands.count()
     if total_brands > 0:
         if limit:
@@ -47,12 +47,12 @@ async def douglas_data(
 @router.get("/view")
 async def douglas_view(
     request: Request,
-    name_contains: str = None,
+    category_contains: str = None,
     page: int = 1,
 ):
     offset = (page - 1) * limit
     result = await douglas_data(
-        name_contains=name_contains,
+        category_contains=category_contains,
         offset=offset,
         limit=limit
     )
@@ -66,6 +66,6 @@ async def douglas_view(
             "results": results,
             "current_page": page,
             "total_pages": total_pages,
-            "name_contains": name_contains,
+            "category_contains": category_contains,
         },
     )
