@@ -1,30 +1,20 @@
 from fastapi import FastAPI
-from app.utils.database import test_db_connection, engine, DATABASE_URL
+import uvicorn
 from app.routers import telegrafi, gjirafa, kosovajob, home
 from app.models import Base
-import uvicorn
-from fastapi_amis_admin.admin.settings import Settings
-from fastapi_amis_admin.admin.site import AdminSite
-from fastapi_scheduler import SchedulerAdmin
-from app.tasks.gjirafa import gjirafa1
-
-
+from app.utils.database import engine
+from app.tasks import gjirafa as gjirafa_tasks
+from app.utils.tasks import site, scheduler
 
 app = FastAPI()
 
-site = AdminSite(settings=Settings(database_url=DATABASE_URL))
-scheduler = SchedulerAdmin.bind(site)
 site.mount_app(app)
-
-@app.get("/test-db")
-def test_database_connection():
-    return test_db_connection()
-
-app.include_router(home.router)
 
 @app.on_event("startup")
 async def startup():
     scheduler.start()
+
+app.include_router(home.router)
 
 app.include_router(gjirafa.router)
 
