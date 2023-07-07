@@ -21,12 +21,12 @@ class DouglasScraper(Scraper):
             #print(soupprettifyed)
                 
             for item in item_elements:
-                name = item.find("div", class_="text top-brand").text.strip()
+                name = item.find("div", class_="text top-brand").text.strip().replace("ô", "o")
                 category = item.find("div", class_="text category").text.strip()
                 price = item.find("div", class_="price-row").text.strip()            
                 details_link = item.find("a", "link link--no-decoration product-tile__main-link").get('href')
                 if details_link is not None:
-                    details_link = "https://www.douglas.de/en" + details_link
+                    details_link = "https://www.douglas.de" + details_link
                     
                 results.append({"name": name, "category": category, "price": price or None, "details_link": details_link})
                 
@@ -35,13 +35,15 @@ class DouglasScraper(Scraper):
     def save_to_db( results):
         try:
             for result in results:
-                brands = Brand(
-                    name=result["name"],
-                    category=result["category"],
-                    price=result["price"],
-                    details_link=result["details_link"],
-                )
-                session.add(brands)
+                existing_brand = session.query(Brand).filter_by(name=result["name"]).first()
+                if existing_brand is None:
+                    brands = Brand(
+                        name=result["name"],
+                        category=result["category"],
+                        price=result["price"],
+                        details_link=result["details_link"],
+                    )
+                    session.add(brands)
             session.commit()
         except Exception as e:
             logging.error(f"Error saving to database.")

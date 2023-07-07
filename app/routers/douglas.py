@@ -12,8 +12,8 @@ limit = 10
 
 
 @router.get("/scrape")
-async def douglas_scrape(url_path: str, page_numbers: int):
-    douglas_scraper = DouglasScraper(base_url="https://www.douglas.de/en")
+async def douglas_scrape(url_path: str= Query(default="Make-up/"), page_numbers: int = Query(default=1)):
+    douglas_scraper = DouglasScraper(base_url="https://www.douglas.de")
     results = douglas_scraper.scrape(url_path=url_path, page_numbers=page_numbers)
     DouglasScraper.save_to_db(results=results)
     return results
@@ -21,7 +21,6 @@ async def douglas_scrape(url_path: str, page_numbers: int):
 @router.get("/data")
 async def douglas_data(
     name_contains: str = None,
-    category_contains: str = None,
     offset: int = None,
     limit: int = None,
 ):
@@ -37,18 +36,6 @@ async def douglas_data(
     else:
         total_pages = 1
         
-        
-        
-    if category_contains:
-        brands = brands.filter(Brand.category.ilike(f"%{category_contains}%"))
-    total_brands = brands.count()
-    if total_brands > 0:
-        if limit:
-            total_pages = int(ceil(total_brands / limit))
-        else:
-            total_pages = int(ceil(total_brands / total_brands))
-    else:
-        total_pages = 1
     
     brands = brands.offset(offset).limit(limit)
     results = []
@@ -61,13 +48,11 @@ async def douglas_data(
 async def douglas_view(
     request: Request,
     name_contains: str = None,
-    category_constains: str = None,
     page: int = 1,
 ):
     offset = (page - 1) * limit
     result = await douglas_data(
         name_contains=name_contains,
-        category_contains=category_constains,
         offset=offset,
         limit=limit
     )
@@ -82,6 +67,5 @@ async def douglas_view(
             "current_page": page,
             "total_pages": total_pages,
             "name_contains": name_contains,
-            "category_constains": category_constains
         },
     )
