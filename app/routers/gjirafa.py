@@ -31,8 +31,8 @@ async def gjirafa_data(
 
     if title_contains:
         products = products.filter(Product.name.ilike(f"%{title_contains}%"))
-    
-    if limit_price is not None:
+
+    if limit_price is not None:  # Check if limit_price is not None
         products = products.filter(Product.price < limit_price)
 
     total_products = products.count()
@@ -53,10 +53,16 @@ async def gjirafa_data(
 async def gjirafa_view(
     request: Request,
     title_contains: str = None,
-    limit_price: float = None,
+    limit_price: str = None,  # Change the type to string
     page: int = 1,
 ):
     offset = (page - 1) * limit
+
+    if limit_price and limit_price.strip() != "":
+        limit_price = float(limit_price)
+    else:
+        limit_price = None
+
     result = await gjirafa_data(
         request=request,
         title_contains=title_contains,

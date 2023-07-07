@@ -1,16 +1,18 @@
 from fastapi import FastAPI
-from app.utils.database import test_db_connection
 import uvicorn
-from app.routers import telegrafi, gjirafa,kosovajob,home
+from app.routers import telegrafi, gjirafa, kosovajob, home
 from app.models import Base
 from app.utils.database import engine
+from app.tasks import gjirafa as gjirafa_tasks
+from app.utils.tasks import site, scheduler
 
 app = FastAPI()
 
+site.mount_app(app)
 
-@app.get("/test-db")
-def test_database_connection():
-    return test_db_connection()
+@app.on_event("startup")
+async def startup():
+    scheduler.start()
 
 app.include_router(home.router)
 
