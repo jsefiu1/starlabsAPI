@@ -1,6 +1,7 @@
 from app.scrapers.base import Scraper
 from app.utils.database import session
 from app.models.douglas import Brand
+from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import requests
 import logging
@@ -25,10 +26,10 @@ class DouglasScraper(Scraper):
                 category = item.find("div", class_="text category").text.strip()
                 price = item.find("div", class_="price-row").text.strip()            
                 details_link = item.find("a", "link link--no-decoration product-tile__main-link").get('href')
+                date_scraped = datetime.now()
                 if details_link is not None:
                     details_link = "https://www.douglas.de" + details_link
-                    
-                results.append({"name": name, "category": category, "price": price or None, "details_link": details_link})
+                results.append({"name": name, "category": category, "price": price or None, "details_link": details_link, "date_scraped":date_scraped})
                 
         return results
     
@@ -42,6 +43,7 @@ class DouglasScraper(Scraper):
                         category=result["category"],
                         price=result["price"],
                         details_link=result["details_link"],
+                        date_scraped=result["date_scraped"],
                     )
                     session.add(brands)
             session.commit()

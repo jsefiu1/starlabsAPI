@@ -75,7 +75,7 @@
                 <th>Name</th>
                 <th>Category</th>
                 <th>Link</th>
-                <th>Price</th>
+                <th>Scraping Date</th>
             </tr>
         </thead>
         <tbody>
@@ -85,6 +85,7 @@
                 <td><div class="name">{{ item ['name'] }}</div></td>
                 <td><div class="category">{{ item ['category'] }}</div></td>
                 <td><a href="{{ item ['details_link'] }}">Link</a></td>
+                <td>{{item ['date_scraped'].strftime('%Y-%m-%d %H:%M') }}</td>
             </tr>
             {% endfor %}
         </tbody>
