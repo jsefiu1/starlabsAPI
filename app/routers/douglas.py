@@ -23,10 +23,15 @@ async def douglas_data(
     category_contains: str = None,
     offset: int = None,
     limit: int = None,
+    limit_price: str = None
 ):
     brands = session.query(Brand)
     if category_contains:
         brands = brands.filter(Brand.category.ilike(f"%{category_contains}%"))
+    
+    if limit_price is not None:
+        brands = brands.filter(Brand.price < limit_price)
+        
     total_brands = brands.count()
     if total_brands > 0:
         if limit:
@@ -48,13 +53,21 @@ async def douglas_data(
 async def douglas_view(
     request: Request,
     category_contains: str = None,
+    limit_price: str = None,
     page: int = 1,
 ):
     offset = (page - 1) * limit
+    
+    if limit_price and limit_price.strip() != "":
+        limit_price = str(limit_price)
+    else:
+         limit_price = None
+         
     result = await douglas_data(
         category_contains=category_contains,
         offset=offset,
-        limit=limit
+        limit=limit,
+        limit_price=limit_price
     )
     results = result["results"]
     total_pages = result["total_pages"]
@@ -67,5 +80,6 @@ async def douglas_view(
             "current_page": page,
             "total_pages": total_pages,
             "category_contains": category_contains,
+            "limit_price": limit_price
         },
     )

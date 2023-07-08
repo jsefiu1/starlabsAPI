@@ -19,17 +19,27 @@ class DouglasScraper(Scraper):
             item_elements = soup.find_all("div", class_="product-grid-column col-sm-6 col-md-4 col-lg-3")
             #print(scrape_url)
             #print(html_text)
-            #print(soupprettifyed)
+
                 
             for item in item_elements:
                 name = item.find("div", class_="text top-brand").text.strip().replace("ô", "o")
                 category = item.find("div", class_="text category").text.strip()
-                price = item.find("div", class_="price-row").text.strip()            
+                #try:
+                price_offer = item.find("div", class_=["price-row", "discounted-price__row"])
+                price_offer = price_offer.text.strip().replace("UVP","from ") if price_offer is not None else None
+    
+                price = item.find("div", class_=["price-row"])
+                price = price.text.strip().replace("UVP","from ") if price is not None else None         
+                 #   price = re.sub(r"[^\d.]+", "", price)
+                  #  price = str(price) if price else None
+                #except AttributeError:
+                 #   price = None
+                    
                 details_link = item.find("a", "link link--no-decoration product-tile__main-link").get('href')
                 date_scraped = datetime.now()
                 if details_link is not None:
                     details_link = "https://www.douglas.de" + details_link
-                results.append({"name": name, "category": category, "price": price or None, "details_link": details_link, "date_scraped":date_scraped})
+                results.append({"name": name, "category": category, "price": price or price_offer or None, "details_link": details_link, "date_scraped":date_scraped})
                 
         return results
     
