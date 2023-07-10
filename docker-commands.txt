@@ -1,3 +1,5 @@
 docker-compose build
 docker-compose up
 docker-compose down
+docker volume ls
+docker volume rm fastapi_postgres_data

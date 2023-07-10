@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Ofertasuksesi</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      h1 {
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px solid #ccc;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ccc;
+        border-right: 1px solid #ccc;
+      }
+      th {
+        background-color: #4dabf7;
+        color: #fff;
+      }
+      .search-form {
+        margin-bottom: 20px;
+      }
+      .search-form label {
+        margin-right: 10px;
+      }
+      .search-form input[type="text"],
+      .search-form input[type="number"] {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .search-form button[type="submit"] {
+        padding: 8px 16px;
+        background-color: #4dabf7;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: bold;
+      }
+      .search-form button[type="submit"]:hover {
+        background-color: #228be6;
+      }
+      .pagination {
+        margin-top: 20px;
+        text-align: center;
+      }
+      .pagination a {
+        display: inline-block;
+        margin: 0 5px;
+        padding: 8px 12px;
+        background-color: #f2f2f2;
+        color: #333;
+        text-decoration: none;
+        border-radius: 4px;
+      }
+      .pagination a.current {
+        background-color: #4caf50;
+        color: white;
+      }
+      .pagination a:hover {
+        background-color: #ddd;
+      }
+      .title {
+        max-width: 700px;
+        overflow: break-word;
+        text-overflow: ellipsis;
+      }
+      .pagination .number {
+        display: inline-block;
+        margin: 0 5px;
+        padding: 8px 12px;
+        background-color: #f2f2f2;
+        color: #333;
+        text-decoration: none;
+        border-radius: 4px;
+      }
+      .pagination .number.current {
+        background-color: #228be6;
+        color: white;
+      }
+      .pagination .number:hover {
+        background-color: #ddd;
+      }
+      .pagination .prev {
+        background-color: #4dabf7;
+        color: #fff;
+        transition: all 0.3s;
+      }
+      .pagination .prev:hover {
+        background-color: #228be6;
+      }
+      .pagination .next {
+        background-color: #4dabf7;
+        color: #fff;
+        transition: all 0.3s;
+      }
+      .pagination .next:hover {
+        background-color: #228be6;
+      }
+      .table-colors {
+        max-width: 700px;
+        overflow: break-word;
+        text-overflow: ellipsis;
+        background-color: #f2f2f2;
+        color: #333;
+        padding: 8px;
+      }
+      table td a {
+        background-color: #4dabf7;
+        color: #fff;
+        padding: 6px 10px;
+        text-decoration: none;
+        border-radius: 4px;
+        transition: all 0.3s;
+      }
+      table td a:hover {
+        background-color: #228be6;
+      }
+    </style>
+  </head>
+  
+  <body>
+    <h1>Ofertasuksesi Data</h1>
+    <div class="search-bar">
+      <form class="search-form" action="/search" method="get">
+        <input type="text" id="max_price" name="query" placeholder="Search location..." required/>
+        <button type="submit">Search</button>
+      </form>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Location</th>
+        </tr>
+      </thead>
+      {% for offer in offers %}
+      <tbody>
+        <tr>
+          <td class="table-colors">{{ offer.title }}</td>
+          <td class="table-colors" style="text-align: center;"><a href="{{ offer.info }}">Description link</a></td>
+          <td class="table-colors" style="text-align: center;">{{ offer.location }}</td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+    
+    <div class="pagination">
+      {% if current_page > 1 %}
+        <a href="/ofertasuksesi/html?page={{ current_page - 1 }}" class="prev">Previous</a>
+        {% if current_page == 2 %}
+          <a href="/ofertasuksesi/html?page=1" class="number">1</a>
+        {% elif current_page > 4 %}
+          <a href="/ofertasuksesi/html?page=1" class="number">1</a>
+          {% if total_pages > 4 %}
+            <span class="pagination-dots">...</span>
+          {% endif %}
+          <a href="/ofertasuksesi/html?page={{ current_page - 2 }}" class="number">{{ current_page - 2 }}</a>
+        {% endif %}
+      {% endif %}
+    
+      {% if current_page == 3 %}
+        <a href="/ofertasuksesi/html?page=1" class="number">1</a>
+      {% elif current_page == 4 %}
+        <a href="/ofertasuksesi/html?page=1" class="number">1</a>
+        <a href="/ofertasuksesi/html?page={{ current_page - 2 }}" class="number">{{ current_page - 2 }}</a>
+      {% endif %}
+
+      {% for page in range(current_page - 1, current_page + 3) %}
+        {% if page >= 1 and page <= total_pages %}
+          {% if page == current_page %}
+            <span class="number current">{{ page }}</span>
+          {% elif page != 1 %}
+            <a href="/ofertasuksesi/html?page={{ page }}" class="number">{{ page }}</a>
+          {% endif %}
+        {% endif %}
+      {% endfor %}
+    
+      {% if current_page < total_pages - 2 %}
+        {% if total_pages > 4 %}
+          <span class="pagination-dots">...</span>
+        {% endif %}
+        <a href="/ofertasuksesi/html?page={{ total_pages }}" class="number">{{ total_pages }}</a>
+      {% endif %}
+    
+      {% if current_page < total_pages %}
+        <a href="/ofertasuksesi/html?page={{ current_page + 1 }}" class="next">Next</a>
+      {% endif %}
+    </div>
+  </body>
+</html>

@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from app.routers import telegrafi, gjirafa, kosovajob, home
+from app.routers import telegrafi, gjirafa, kosovajob, home, ofertasuksesi
 from app.models import Base
 from app.utils.database import engine
 from app.tasks import gjirafa as gjirafa_tasks
@@ -21,6 +21,7 @@ app.include_router(gjirafa.router)
 app.include_router(telegrafi.router)
 
 app.include_router(kosovajob.router)
+app.include_router(ofertasuksesi.router)
 
 Base.metadata.create_all(engine)
 

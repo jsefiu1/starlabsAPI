@@ -112,14 +112,3 @@ def dashboard(
         'start_page': start_page,
         'end_page': end_page,
     })
-
-
-
-
-
-
-
-
-
-
-
