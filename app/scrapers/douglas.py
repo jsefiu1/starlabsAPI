@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
 import requests
 import logging
+import re
 
 class DouglasScraper(Scraper):
     def __init__(self, base_url: str):
@@ -24,16 +25,17 @@ class DouglasScraper(Scraper):
             for item in item_elements:
                 name = item.find("div", class_="text top-brand").text.strip().replace("ô", "o")
                 category = item.find("div", class_="text category").text.strip()
-                #try:
-                price_offer = item.find("div", class_=["price-row", "discounted-price__row"])
-                price_offer = price_offer.text.strip().replace("UVP","from ") if price_offer is not None else None
-    
-                price = item.find("div", class_=["price-row"])
-                price = price.text.strip().replace("UVP","from ") if price is not None else None         
-                 #   price = re.sub(r"[^\d.]+", "", price)
-                  #  price = str(price) if price else None
-                #except AttributeError:
-                 #   price = None
+
+                price_offer = item.find("div", class_=["price-row"])
+                price_offer = price_offer.text.strip() if price_offer is not None else None
+                    #price_offer = re.sub(r"[^\d.]", "", price_offer)
+
+                    
+
+                price = item.find("div", class_=["product-price__strikethrough product-price__strikethrough--unit price-row__price price-row__price--original-price"])
+                price = price.text.strip().replace("UVP", "") if price is not None else None
+                    #price = re.sub(r"[^\d.]", "", price)
+
                     
                 details_link = item.find("a", "link link--no-decoration product-tile__main-link").get('href')
                 date_scraped = datetime.now()

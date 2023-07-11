@@ -67,13 +67,7 @@
         <label for="category_contains">category:</label>
         <input type="text" id="category_contains" name="category_contains" placeholder="Enter category...">
         <label for="max_price">Maximum Price:</label>
-        <input
-          type="number"
-          id="max_price"
-          name="limit_price"
-          placeholder="Enter maximum price"
-          value="{{ limit_price or ''}}"
-        />  
+        <input type="number" id="max_price" name="limit_price" placeholder="Enter maximum price" value="{{ limit_price or ''}}"/>  
         <button type="submit">Search</button>
     </form>
     <table>
@@ -137,7 +131,7 @@
             {% else %}
                 <a href="/douglas/view?page=1{% if category_contains %}&category_contains={{ category_contains }}{% endif %}{% if limit_price is not none %}&limit_price={{ limit_price }}{% endif %}">1</a>
                 ...
-                {% for page in range(current_page - 1), current_page + 2 %}
+                {% for page in range(current_page - 1, current_page + 2 )%}
                     {% if page == current_page %}
                         <a href="/douglas/view?page={{ page }}{% if category_contains %}&category_contains={{ category_contains }}{% endif %}{% if limit_price is not none %}&limit_price={{ limit_price }}{% endif %}" class="current">{{ page }}</a>
                     {% else %}
@@ -149,7 +143,7 @@
             {% endif %}
         {% endif %}
         {% if current_page < total_pages %}
-            <a href="/douglas/view03?page={{current_page + 1}}{%if category_contains %}&category_contains={{category_contains}}{% endif %}{% if limit_price is not none %}&limit_price={{ limit_price }}{% endif %}">Next</a>
+            <a href="/douglas/view?page={{current_page + 1}}{%if category_contains %}&category_contains={{category_contains}}{% endif %}{% if limit_price is not none %}&limit_price={{ limit_price }}{% endif %}">Next</a>
         {% endif %}
     </div>
 </body>

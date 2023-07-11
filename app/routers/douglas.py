@@ -32,6 +32,8 @@ async def douglas_data(
     if limit_price is not None:
         brands = brands.filter(Brand.price < limit_price)
         
+        
+        
     total_brands = brands.count()
     if total_brands > 0:
         if limit:
