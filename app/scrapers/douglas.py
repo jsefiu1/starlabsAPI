@@ -14,7 +14,7 @@ class DouglasScraper(Scraper):
         scrape_url = f"{self.base_url}{url_path}"
         results = []
         for page in range(1, page_numbers + 1):
-            scrape_url = f"{self.base_url}/c/{url_path}03/?page={page}"
+            scrape_url = f"{self.base_url}/c/{url_path}/?page={page}"
             html_text = requests.get(scrape_url).text
             soup = BeautifulSoup(html_text, "lxml")
             item_elements = soup.find_all("div", class_="product-grid-column col-sm-6 col-md-4 col-lg-3")
