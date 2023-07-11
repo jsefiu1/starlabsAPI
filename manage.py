@@ -3,7 +3,11 @@ import uvicorn
 from app.routers import telegrafi, gjirafa, kosovajob, home
 from app.models import Base
 from app.utils.database import engine
-from app.tasks import telegrafi as telegrafi_tasks, gjirafa as gjirafa_tasks
+from app.tasks import (
+    telegrafi as telegrafi_tasks,
+    gjirafa as gjirafa_tasks,
+    kosovajob as kosovajob_tasks,
+)
 from app.utils.tasks import site, scheduler
 
 app = FastAPI()

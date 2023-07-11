@@ -23,7 +23,8 @@ class KosovajobScraper(Scraper):
             image_div = parent_div.find('div', class_='jobListImage')
             image_url = image_div['data-background-image']
             job_title = parent_div.find('div', class_='jobListTitle').text
-            city = parent_div.find('div', class_='jobListCity').text
+            city_element = parent_div.find('div', class_='jobListCity')
+            city = city_element.text.strip() if city_element else None
             expires_date = parent_div.find('div', class_='jobListExpires').text
             results.append({'image_url': image_url,'title': job_title, 'city': city, 'expires_date': expires_date, 'date_of_scrape': date_of_scrape})
 
