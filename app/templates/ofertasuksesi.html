@@ -129,12 +129,18 @@
       }
     </style>
   </head>
-  
+
   <body>
     <h1>Ofertasuksesi Data</h1>
     <div class="search-bar">
       <form class="search-form" action="/search" method="get">
-        <input type="text" id="max_price" name="query" placeholder="Search location..." required/>
+        <input
+          type="text"
+          id="max_price"
+          name="query"
+          placeholder="Search location..."
+          required
+        />
         <button type="submit">Search</button>
       </form>
     </div>
@@ -150,53 +156,57 @@
       <tbody>
         <tr>
           <td class="table-colors">{{ offer.title }}</td>
-          <td class="table-colors" style="text-align: center;"><a href="{{ offer.info }}">Description link</a></td>
-          <td class="table-colors" style="text-align: center;">{{ offer.location }}</td>
+          <td class="table-colors" style="text-align: center">
+            <a href="{{ offer.info }}" target="_blank">Description link</a>
+          </td>
+          <td class="table-colors" style="text-align: center">
+            {{ offer.location }}
+          </td>
         </tr>
       </tbody>
       {% endfor %}
     </table>
-    
+
     <div class="pagination">
       {% if current_page > 1 %}
-        <a href="/ofertasuksesi/html?page={{ current_page - 1 }}" class="prev">Previous</a>
-        {% if current_page == 2 %}
-          <a href="/ofertasuksesi/html?page=1" class="number">1</a>
-        {% elif current_page > 4 %}
-          <a href="/ofertasuksesi/html?page=1" class="number">1</a>
-          {% if total_pages > 4 %}
-            <span class="pagination-dots">...</span>
-          {% endif %}
-          <a href="/ofertasuksesi/html?page={{ current_page - 2 }}" class="number">{{ current_page - 2 }}</a>
-        {% endif %}
+      <a href="/ofertasuksesi/html?page={{ current_page - 1 }}" class="prev"
+        >Previous</a
+      >
+      {% if current_page == 2 %}
+      <a href="/ofertasuksesi/html?page=1" class="number">1</a>
+      {% elif current_page > 4 %}
+      <a href="/ofertasuksesi/html?page=1" class="number">1</a>
+      {% if total_pages > 4 %}
+      <span class="pagination-dots">...</span>
       {% endif %}
-    
-      {% if current_page == 3 %}
-        <a href="/ofertasuksesi/html?page=1" class="number">1</a>
+      <a href="/ofertasuksesi/html?page={{ current_page - 2 }}" class="number"
+        >{{ current_page - 2 }}</a
+      >
+      {% endif %} {% endif %} {% if current_page == 3 %}
+      <a href="/ofertasuksesi/html?page=1" class="number">1</a>
       {% elif current_page == 4 %}
-        <a href="/ofertasuksesi/html?page=1" class="number">1</a>
-        <a href="/ofertasuksesi/html?page={{ current_page - 2 }}" class="number">{{ current_page - 2 }}</a>
+      <a href="/ofertasuksesi/html?page=1" class="number">1</a>
+      <a href="/ofertasuksesi/html?page={{ current_page - 2 }}" class="number"
+        >{{ current_page - 2 }}</a
+      >
+      {% endif %} {% for page in range(current_page - 1, current_page + 3) %} {%
+      if page >= 1 and page <= total_pages %} {% if page == current_page %}
+      <span class="number current">{{ page }}</span>
+      {% elif page != 1 %}
+      <a href="/ofertasuksesi/html?page={{ page }}" class="number"
+        >{{ page }}</a
+      >
+      {% endif %} {% endif %} {% endfor %} {% if current_page < total_pages - 2
+      %} {% if total_pages > 4 %}
+      <span class="pagination-dots">...</span>
       {% endif %}
-
-      {% for page in range(current_page - 1, current_page + 3) %}
-        {% if page >= 1 and page <= total_pages %}
-          {% if page == current_page %}
-            <span class="number current">{{ page }}</span>
-          {% elif page != 1 %}
-            <a href="/ofertasuksesi/html?page={{ page }}" class="number">{{ page }}</a>
-          {% endif %}
-        {% endif %}
-      {% endfor %}
-    
-      {% if current_page < total_pages - 2 %}
-        {% if total_pages > 4 %}
-          <span class="pagination-dots">...</span>
-        {% endif %}
-        <a href="/ofertasuksesi/html?page={{ total_pages }}" class="number">{{ total_pages }}</a>
-      {% endif %}
-    
-      {% if current_page < total_pages %}
-        <a href="/ofertasuksesi/html?page={{ current_page + 1 }}" class="next">Next</a>
+      <a href="/ofertasuksesi/html?page={{ total_pages }}" class="number"
+        >{{ total_pages }}</a
+      >
+      {% endif %} {% if current_page < total_pages %}
+      <a href="/ofertasuksesi/html?page={{ current_page + 1 }}" class="next"
+        >Next</a
+      >
       {% endif %}
     </div>
   </body>

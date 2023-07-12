@@ -15,11 +15,8 @@ async def startup():
     scheduler.start()
 
 app.include_router(home.router)
-
 app.include_router(gjirafa.router)
-
 app.include_router(telegrafi.router)
-
 app.include_router(kosovajob.router)
 app.include_router(ofertasuksesi.router)
 

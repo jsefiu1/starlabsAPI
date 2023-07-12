@@ -18,7 +18,9 @@ def get_ofertasuksesi_html(request: Request, page: Optional[int] = Query(1, ge=1
     total_pages = ceil(total_items / items_per_page)
 
     if not offers:
-        raise HTTPException(status_code=404, detail="No data in database")
+        template = templates.get_template("ofertasuksesi.html")
+        rendered_html = template.render(offers=[], current_page=1, pagination_numbers=range(1, 2), total_pages=1, error_message="Location not found")
+        return rendered_html + "Data not found!"
 
     start_index = (page - 1) * items_per_page
     end_index = start_index + items_per_page
@@ -28,7 +30,7 @@ def get_ofertasuksesi_html(request: Request, page: Optional[int] = Query(1, ge=1
     rendered_html = template.render(offers=current_offers, current_page=page, pagination_numbers=range(1, total_pages + 1), total_pages=total_pages)
 
     return rendered_html
-
+    
 @router.get("/search", response_class=HTMLResponse)
 def search_offers(query: Optional[str], request: Request, page: Optional[int] = Query(1, ge=1), current_page: Optional[int] = Query(default=1, ge=1)):
     format_query = query.title()
@@ -37,8 +39,16 @@ def search_offers(query: Optional[str], request: Request, page: Optional[int] = 
     total_items = len(check_offers)
     total_pages = ceil(total_items / items_per_page)
 
+    if query and not check_offers:
+        template = templates.get_template("ofertasuksesi.html")
+        rendered_html = template.render(offers=[], current_page=1, pagination_numbers=range(1, 2), total_pages=1, error_message="Location not found")
+
+        return rendered_html + "Location not found!"
+
     if not check_offers:
-        raise HTTPException(status_code=404, detail="No data in database")
+        template = templates.get_template("ofertasuksesi.html")
+        rendered_html = template.render(offers=[], current_page=1, pagination_numbers=range(1, 2), total_pages=1, error_message="Location not found")
+        return rendered_html + "Data not found!"
 
     if query:
         items_per_page = total_items
@@ -52,6 +62,7 @@ def search_offers(query: Optional[str], request: Request, page: Optional[int] = 
 
     return rendered_html
 
+
 @router.get("/ofertasuksesi/scrape")
 def offertasuksesi_data(category: str, page: int):
     return scrape(category=category, page=page)
@@ -63,7 +74,7 @@ def get_ofertasuksesi_data():
         raise HTTPException(status_code=404, detail="No data in database")
     else:
         return offers
-    
+
 @router.get("/ofertasuksesi/by-title-location")
 def get_ofertasuksesi_by_title_location(title: str = Query(None), location: str = Query(None)):
     format_loc = location.title().replace(" ", "")
