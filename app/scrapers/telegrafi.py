@@ -46,8 +46,13 @@ class TelegrafiScraper(Scraper):
                     details_div = details_soup.find(
                         "div", class_="single__article--items"
                     )
-                    paragraphs = details_div.find_all("p")
-                    details = " ".join(paragraph.get_text() for paragraph in paragraphs)
+                    if details_div is not None:
+                        paragraphs = details_div.find_all("p")
+                        details = " ".join(
+                            paragraph.get_text() for paragraph in paragraphs
+                        )
+                    else:
+                        details = ""
                 else:
                     details = ""
                 data = {
