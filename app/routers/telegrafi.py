@@ -22,6 +22,7 @@ async def scrape_telegrafi(url_path: str, page_numbers: int):
 
 @router.get("/data")
 async def telegrafi_data(
+    article_id: int = None,
     title_contains: str = None,
     date_from: str = None,
     date_to: str = None,
@@ -29,6 +30,9 @@ async def telegrafi_data(
     limit: int = None,
 ):
     articles = session.query(Article)
+
+    if article_id:
+        articles = articles.filter(Article.id == article_id)
 
     if title_contains:
         articles = articles.filter(Article.name.ilike(f"%{title_contains}%"))

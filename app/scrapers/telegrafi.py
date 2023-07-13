@@ -40,12 +40,18 @@ class TelegrafiScraper(Scraper):
                 time_ago = article.find("div", class_="post_date_info").text
                 date_posted = string_ago_to_datetime(time_ago)
                 date_scraped = datetime.now()
+                details_html_text = requests.get(details_link).text
+                details_soup = BeautifulSoup(details_html_text, "lxml")
+                details_div = details_soup.find("div", class_="single__article--items")
+                paragraphs = details_div.find_all("p")
+                details = " ".join(paragraph.get_text() for paragraph in paragraphs)
                 data = {
                     "name": name,
                     "details_link": details_link,
                     "image_link": image_link,
                     "date_posted": date_posted,
                     "date_scraped": date_scraped,
+                    "details": details,
                 }
 
                 results.append(data)
@@ -60,6 +66,7 @@ class TelegrafiScraper(Scraper):
                     image_link=result["image_link"],
                     date_posted=result["date_posted"],
                     date_scraped=result["date_scraped"],
+                    details=result["details"],
                 )
 
                 if session.query(Article).filter_by(name=article.name).first():
