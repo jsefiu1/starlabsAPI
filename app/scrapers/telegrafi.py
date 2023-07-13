@@ -12,7 +12,7 @@ class TelegrafiScraper(Scraper):
     def __init__(self, base_url: str):
         super().__init__(base_url)
 
-    def scrape(self, url_path: str, page_numbers: int):
+    def scrape(self, url_path: str, page_numbers: int, get_details: bool):
         results = []
         for page_nr in range(1, page_numbers + 1):
             scrape_url = f"{self.base_url}{url_path}page/{page_nr}/"
@@ -40,11 +40,16 @@ class TelegrafiScraper(Scraper):
                 time_ago = article.find("div", class_="post_date_info").text
                 date_posted = string_ago_to_datetime(time_ago)
                 date_scraped = datetime.now()
-                details_html_text = requests.get(details_link).text
-                details_soup = BeautifulSoup(details_html_text, "lxml")
-                details_div = details_soup.find("div", class_="single__article--items")
-                paragraphs = details_div.find_all("p")
-                details = " ".join(paragraph.get_text() for paragraph in paragraphs)
+                if get_details:
+                    details_html_text = requests.get(details_link).text
+                    details_soup = BeautifulSoup(details_html_text, "lxml")
+                    details_div = details_soup.find(
+                        "div", class_="single__article--items"
+                    )
+                    paragraphs = details_div.find_all("p")
+                    details = " ".join(paragraph.get_text() for paragraph in paragraphs)
+                else:
+                    details = ""
                 data = {
                     "name": name,
                     "details_link": details_link,
