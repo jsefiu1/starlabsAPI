@@ -18,30 +18,26 @@ class DouglasScraper(Scraper):
             html_text = requests.get(scrape_url).text
             soup = BeautifulSoup(html_text, "lxml")
             item_elements = soup.find_all("div", class_="product-grid-column col-sm-6 col-md-4 col-lg-3")
-            #print(scrape_url)
-            #print(html_text)
 
                 
             for item in item_elements:
                 name = item.find("div", class_="text top-brand").text.strip().replace("ô", "o")
                 category = item.find("div", class_="text category").text.strip()
 
-                price_offer = item.find("div", class_=["price-row"])
-                price_offer = price_offer.text.strip() if price_offer is not None else None
-                    #price_offer = re.sub(r"[^\d.]", "", price_offer)
-
-                    
-
-                price = item.find("div", class_=["product-price__strikethrough product-price__strikethrough--unit price-row__price price-row__price--original-price"])
-                price = price.text.strip().replace("UVP", "") if price is not None else None
-                    #price = re.sub(r"[^\d.]", "", price)
-
-                    
+                
+                price = item.find("div", class_=["product-price__discount product-price__discount--unit price-row__price price-row__price--discount","product-price__discount product-price__discount--unit price-row__price price-row__price--discount price-row__price--discount-color", "product-price__no-discount product-price__no-discount--unit price-row__price price-row__price--discount"])
+                                                
+                if price is not None:
+                    price = price.text.strip().replace("UVP", "").replace("€", "").replace(",", ".").replace("\xa0", "")
+                    price = float(price) if price else None 
+                else:
+                    price = None
+                
                 details_link = item.find("a", "link link--no-decoration product-tile__main-link").get('href')
                 date_scraped = datetime.now()
                 if details_link is not None:
                     details_link = "https://www.douglas.de" + details_link
-                results.append({"name": name, "category": category, "price": price or price_offer or None, "details_link": details_link, "date_scraped":date_scraped})
+                results.append({"name": name, "category": category, "price": price or None, "details_link": details_link, "date_scraped":date_scraped})
                 
         return results
     

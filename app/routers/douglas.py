@@ -23,7 +23,7 @@ async def douglas_data(
     category_contains: str = None,
     offset: int = None,
     limit: int = None,
-    limit_price: str = None
+    limit_price: float = None
 ):
     brands = session.query(Brand)
     if category_contains:
@@ -61,7 +61,7 @@ async def douglas_view(
     offset = (page - 1) * limit
     
     if limit_price and limit_price.strip() != "":
-        limit_price = str(limit_price)
+        limit_price = float(limit_price)
     else:
          limit_price = None
          

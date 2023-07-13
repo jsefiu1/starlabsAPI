@@ -8,6 +8,6 @@ class Brand(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(200))
     category = Column(String(200))
-    price = Column(String(200))
+    price = Column(Float)
     details_link = Column(String(500))
     date_scraped = Column(DateTime)
