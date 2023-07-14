@@ -196,6 +196,7 @@
                     <th>Title</th>
                     <th>City</th>
                     <th>Expiration Date</th>
+                    <th>Details Link</th>
                     <th>Date of scrape</th>
                 </tr>
             </thead>
@@ -206,6 +207,7 @@
                         <td>{{ job.title }}</td>
                         <td>{{ job.city }}</td>
                         <td>{{ job.expires_date }}</td>
+                        <td><a href="{{job.details_link}}" target="_blank">Details Link</a></td>
                         <td>{{ job.date_of_scrape }}</td>
                     </tr>
                 {% endfor %}

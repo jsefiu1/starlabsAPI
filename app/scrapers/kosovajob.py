@@ -26,7 +26,8 @@ class KosovajobScraper(Scraper):
             city_element = parent_div.find('div', class_='jobListCity')
             city = city_element.text.strip() if city_element else None
             expires_date = parent_div.find('div', class_='jobListExpires').text
-            results.append({'image_url': image_url,'title': job_title, 'city': city, 'expires_date': expires_date, 'date_of_scrape': date_of_scrape})
+            details_link = parent_div.find('a')['href']
+            results.append({'image_url': image_url,'title': job_title, 'city': city, 'details_link':details_link,'expires_date': expires_date, 'date_of_scrape': date_of_scrape})
 
         if results:
             return results
@@ -44,6 +45,7 @@ class KosovajobScraper(Scraper):
                 title=result['title'],
                 city=result['city'],
                 expires_date=result['expires_date'],
+                details_link=result['details_link'],
                 date_of_scrape=result['date_of_scrape']
             )
             if session.query(Job).filter_by(title=job.title).first():
