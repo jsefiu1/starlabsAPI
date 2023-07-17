@@ -3,7 +3,10 @@ from app.models import Base
 
 class Job(Base):
     __tablename__='jobs'
-    id=Column(Integer,primary_key=True)
-    title=Column(Text)
-    city=Column(Text)
-    expire_date = Column(Text)
+    id = Column(Integer, primary_key=True)
+    image_url = Column(Text)
+    title = Column(Text)
+    city = Column(Text)
+    expires_date = Column(Text)
+    details_link=Column(Text)
+    date_of_scrape=Column(Text)

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Text
 from app.models import Base
 
 
@@ -11,3 +11,4 @@ class Article(Base):
     image_link = Column(String(500))
     date_posted = Column(DateTime)
     date_scraped = Column(DateTime)
+    details = Column(Text)

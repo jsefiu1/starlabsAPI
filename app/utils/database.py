@@ -23,16 +23,3 @@ admin_site_settings = Settings(database_url=DATABASE_URL)
 engine = create_engine(DATABASE_URL)
 
 session = sessionmaker(bind=engine)()
-
-
-def test_db_connection():
-    try:
-        with engine.connect() as connection:
-            connection.execute(text("SELECT 1"))
-        return True
-        
-    except Exception as e:
-        print(f"Database connection error: {str(e)}")
-        return False
-
-        # http://localhost:8080/
