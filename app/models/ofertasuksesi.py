@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Text
 from app.models import Base
 
 class Data(Base):
@@ -7,3 +7,4 @@ class Data(Base):
     title = Column(String)
     info = Column(String)
     location = Column(String)
+    image = Column(Text)

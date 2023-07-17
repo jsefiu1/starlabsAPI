@@ -68,18 +68,44 @@ def offertasuksesi_data(category: str, page: int):
     return scrape(category=category, page=page)
 
 @router.get("/ofertasuksesi/data")
-def get_ofertasuksesi_data():
-    offers = session.query(Data).all()
+def get_ofertasuksesi_data(limit: int = None, offset: int = None, title: str = None, location: str = None):
+    offers = session.query(Data)
     if not offers:
-        raise HTTPException(status_code=404, detail="No data in database")
-    else:
-        return offers
+        return {"Message": "No data found"}
+    
+    if title:
+        offers = offers.filter(Data.title.ilike(f"%{title}%"))
 
-@router.get("/ofertasuksesi/by-title-location")
-def get_ofertasuksesi_by_title_location(title: str = Query(None), location: str = Query(None)):
-    format_loc = location.title().replace(" ", "")
-    offer = session.query(Data).filter(Data.title == title, Data.location == format_loc).first()
-    if offer is None:
-        raise HTTPException(status_code=404, detail="Title or location not found")
+    if location:
+        offers = offers.filter(Data.location.ilike(f"%{location}%"))
+
+    total_offers = offers.count()
+    if total_offers > 0:
+        if limit:
+            total_pages = int(ceil(total_offers / limit))
     else:
-        return offer
+        total_pages = 1
+
+    offers = offers.offset(offset).limit(limit)
+    results = []
+    for offer in offers:
+        results.append(offer.__dict__)
+    
+    return {"results": results, "total_pages": total_pages}
+
+    
+
+
+    # if not offers:
+    #     raise HTTPException(status_code=404, detail="No data in database")
+    # else:
+    #     return offers
+
+# @router.get("/ofertasuksesi/by-title-location")
+# def get_ofertasuksesi_by_title_location(title: str = Query(None), location: str = Query(None)):
+#     format_loc = location.title().replace(" ", "")
+#     offer = session.query(Data).filter(Data.title == title, Data.location == format_loc).first()
+#     if offer is None:
+#         raise HTTPException(status_code=404, detail="Title or location not found")
+#     else:
+#         return offer
