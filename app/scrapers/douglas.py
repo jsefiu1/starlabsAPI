@@ -25,10 +25,12 @@ class DouglasScraper(Scraper):
                 category = item.find("div", class_="text category").text.strip()
 
                 
-                price = item.find("div", class_=["product-price__discount product-price__discount--unit price-row__price price-row__price--discount","product-price__discount product-price__discount--unit price-row__price price-row__price--discount price-row__price--discount-color", "product-price__no-discount product-price__no-discount--unit price-row__price price-row__price--discount"])
+                price = item.find("div", class_=["product-price__discount product-price__discount--unit price-row__price price-row__price--discount",
+                                                 "product-price__discount product-price__discount--unit price-row__price price-row__price--discount price-row__price--discount-color", "product-price__no-discount product-price__no-discount--unit price-row__price price-row__price--discount"])
                                                 
                 if price is not None:
                     price = price.text.strip().replace("UVP", "").replace("€", "").replace(",", ".").replace("\xa0", "")
+                    #price = re.sub(r"[^\d.]", "", price)
                     price = float(price) if price else None 
                 else:
                     price = None

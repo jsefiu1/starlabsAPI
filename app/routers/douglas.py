@@ -30,7 +30,7 @@ async def douglas_data(
         brands = brands.filter(Brand.category.ilike(f"%{category_contains}%"))
     
     if limit_price is not None:
-        brands = brands.filter(Brand.price < limit_price)
+        brands = brands.filter(Brand.price <= limit_price)
         
         
         
