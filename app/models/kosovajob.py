@@ -8,4 +8,5 @@ class Job(Base):
     title = Column(Text)
     city = Column(Text)
     expires_date = Column(Text)
+    details_link=Column(Text)
     date_of_scrape=Column(Text)

@@ -188,35 +188,30 @@
 
     {% if jobs %}
     <div class="table-container">
-      <table>
-        <thead>
-          <tr>
-            <th>Image URL</th>
-            <th>Title</th>
-            <th>City</th>
-            <th>Expiration Date</th>
-            <th>Date of scrape</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for job in jobs %}
-          <tr>
-            <td>
-              <img
-                src="{{ job.image_url }}"
-                alt="Image"
-                width="92px"
-                height="75px"
-              />
-            </td>
-            <td>{{ job.title }}</td>
-            <td>{{ job.city }}</td>
-            <td>{{ job.expires_date }}</td>
-            <td>{{ job.date_of_scrape }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        <table>
+            <thead>
+                <tr>
+                    <th>Image URL</th>
+                    <th>Title</th>
+                    <th>City</th>
+                    <th>Expiration Date</th>
+                    <th>Details Link</th>
+                    <th>Date of scrape</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for job in jobs %}
+                    <tr>
+                        <td><img src="{{ job.image_url }}" alt="Image" width="92px" height="75px"></td>
+                        <td>{{ job.title }}</td>
+                        <td>{{ job.city }}</td>
+                        <td>{{ job.expires_date }}</td>
+                        <td><a href="{{job.details_link}}" target="_blank">Details Link</a></td>
+                        <td>{{ job.date_of_scrape }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 
     {% if total_pages > 1 %}
