@@ -22,5 +22,5 @@ def telegrafi_scrape():
     for url_path in url_paths:
         requests.get(
             url="http://localhost:8000/telegrafi/scrape",
-            params={"url_path": url_path, "page_numbers": 1},
+            params={"url_path": url_path, "page_numbers": 1, "get_details": True},
         )

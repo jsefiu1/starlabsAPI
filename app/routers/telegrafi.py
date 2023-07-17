@@ -13,15 +13,18 @@ limit = 10
 
 
 @router.get("/scrape")
-async def scrape_telegrafi(url_path: str, page_numbers: int):
+async def scrape_telegrafi(url_path: str, page_numbers: int, get_details: bool = False):
     telegrafi_scraper = TelegrafiScraper(base_url="https://telegrafi.com")
-    results = telegrafi_scraper.scrape(url_path=url_path, page_numbers=page_numbers)
+    results = telegrafi_scraper.scrape(
+        url_path=url_path, page_numbers=page_numbers, get_details=get_details
+    )
     TelegrafiScraper.insert_to_DB(results=results)
     return results
 
 
 @router.get("/data")
 async def telegrafi_data(
+    article_id: int = None,
     title_contains: str = None,
     date_from: str = None,
     date_to: str = None,
@@ -29,6 +32,9 @@ async def telegrafi_data(
     limit: int = None,
 ):
     articles = session.query(Article)
+
+    if article_id:
+        articles = articles.filter(Article.id == article_id)
 
     if title_contains:
         articles = articles.filter(Article.name.ilike(f"%{title_contains}%"))
