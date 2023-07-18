@@ -7,6 +7,7 @@ from app.tasks import (
     telegrafi as telegrafi_tasks,
     gjirafa as gjirafa_tasks,
     kosovajob as kosovajob_tasks,
+    ofertasuksesi as ofertasuksesi_tasks,
 )
 from app.utils.tasks import site, scheduler
 

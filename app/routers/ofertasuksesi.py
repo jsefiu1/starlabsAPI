@@ -51,7 +51,7 @@ def search_offers(query: Optional[str], request: Request, page: Optional[int] = 
         return rendered_html + "Data not found!"
 
     if query:
-        items_per_page = total_items
+        items_per_page = 10
 
     start_index = (page - 1) * items_per_page
     end_index = start_index + items_per_page
@@ -83,6 +83,8 @@ def get_ofertasuksesi_data(limit: int = None, offset: int = None, title: str = N
     if total_offers > 0:
         if limit:
             total_pages = int(ceil(total_offers / limit))
+        else:
+            total_pages = 1
     else:
         total_pages = 1
 
