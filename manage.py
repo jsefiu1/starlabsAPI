@@ -15,12 +15,6 @@ app = FastAPI()
 
 site.mount_app(app)
 
-
-@app.on_event("startup")
-async def startup():
-    scheduler.start()
-
-
 app.include_router(home.router)
 
 app.include_router(gjirafa.router)
