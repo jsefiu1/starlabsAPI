@@ -1,8 +1,10 @@
 from datetime import datetime
+import logging
+from app.models.express import Lajme
 from app.scrapers.base import Scraper
 from bs4 import BeautifulSoup
 import requests
-
+from app.utils.database import session
 
 class ExpressScraper(Scraper):
     def __init__(self, base_url: str):
@@ -35,3 +37,24 @@ class ExpressScraper(Scraper):
             results.append(data)
 
         return results
+    
+    def insert_to_DB(results):
+        try:
+            for result in results:
+                existing_item = session.query(Lajme).filter_by(details=result["details"]).first()
+                if existing_item:
+                    continue
+
+                lajme = Lajme(
+                    name=result["name"],
+                    name2=result["name2"],
+                    details=result["details"],
+                    image=result["image_link"],
+                    date_scraped=result["date_scraped"],
+                )
+
+                session.add(lajme)
+                session.commit()
+        except Exception as e:
+            logging.error(f"Error in saving data to the database: {e}")
+

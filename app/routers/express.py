@@ -6,6 +6,7 @@ from fastapi import APIRouter, Request
 from fastapi.templating import Jinja2Templates
 from math import ceil
 from sqlalchemy.sql.expression import bindparam
+from typing import Optional
 
 
 
@@ -17,26 +18,11 @@ limit = 10
 
 
 @router.get("/scrape")
-async def scrape_express(url_path: str, limit: int, offset: int): 
+async def scrape_express(url_path: str, limit: int, offset: int = 0): 
 
     express_scraper = ExpressScraper(base_url="https://www.gazetaexpress.com")
     results = express_scraper.scrape(url_path=url_path, limit=limit, offset=offset)
-
-    for result in results:
-        existing_item = session.query(Lajme).filter_by(details=result["details"]).first()
-        if existing_item:
-            continue
-
-        lajme = Lajme(
-            name=result["name"],
-            name2=result["name2"],
-            details=result["details"],
-            image=result["image_link"],
-            date_scraped=result["date_scraped"],
-        )
-
-        session.add(lajme)
-        session.commit()
+    ExpressScraper.insert_to_DB(results)
 
     return results
 
