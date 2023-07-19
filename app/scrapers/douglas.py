@@ -23,7 +23,6 @@ class DouglasScraper(Scraper):
             for item in item_elements:
                 name = item.find("div", class_="text top-brand").text.strip().replace("ô", "o")
                 category = item.find("div", class_="text category").text.strip()
-
                 
                 price = item.find("div", class_=["product-price__discount product-price__discount--unit price-row__price price-row__price--discount",
                                                  "product-price__discount product-price__discount--unit price-row__price price-row__price--discount price-row__price--discount-color", "product-price__no-discount product-price__no-discount--unit price-row__price price-row__price--discount"])
@@ -39,7 +38,11 @@ class DouglasScraper(Scraper):
                 date_scraped = datetime.now()
                 if details_link is not None:
                     details_link = "https://www.douglas.de" + details_link
-                results.append({"name": name, "category": category, "price": price or None, "details_link": details_link, "date_scraped":date_scraped})
+                    
+                image_item = item.find("img", class_="image")
+                image_link = image_item.get("src") if image_item else "No link found"
+                
+                results.append({"name": name, "category": category, "price": price or None, "details_link": details_link, "date_scraped":date_scraped, "image_link": image_link,})
                 
         return results
     
@@ -51,6 +54,7 @@ class DouglasScraper(Scraper):
                     brands = Brand(
                         name=result["name"],
                         category=result["category"],
+                        image_link=result["image_link"],
                         price=result["price"],
                         details_link=result["details_link"],
                         date_scraped=result["date_scraped"],
