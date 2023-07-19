@@ -167,7 +167,7 @@
       {% endfor %}
     </table>
 
-    <div class="pagination">
+    <!-- <div class="pagination">
       {% if current_page > 1 %}
       <a href="/ofertasuksesi/html?page={{ current_page - 1 }}" class="prev"
         >Previous</a
@@ -205,6 +205,60 @@
       >
       {% endif %} {% if current_page < total_pages %}
       <a href="/ofertasuksesi/html?page={{ current_page + 1 }}" class="next"
+        >Next</a
+      >
+      {% endif %}
+    </div> -->
+    <div class="pagination">
+      {% if current_page > 1 %}
+      <a
+        href="/search?page={{ current_page - 1 }}&query={{ query }}"
+        class="prev"
+        >Previous</a
+      >
+      {% if current_page > 4 %}
+      <a href="/search?page=1&query={{ query }}" class="number">1</a>
+      {% if current_page > 5 %}
+      <span class="pagination-dots">...</span>
+      {% endif %} {% endif %} {% if current_page > 2 %}
+      <a
+        href="/search?page={{ current_page - 2 }}&query={{ query }}"
+        class="number"
+        >{{ current_page - 2 }}</a
+      >
+      {% endif %}
+      <a
+        href="/search?page={{ current_page - 1 }}&query={{ query }}"
+        class="number"
+        >{{ current_page - 1 }}</a
+      >
+      {% endif %}
+
+      <span class="number current">{{ current_page }}</span>
+
+      {% if current_page < total_pages %}
+      <a
+        href="/search?page={{ current_page + 1 }}&query={{ query }}"
+        class="number"
+        >{{ current_page + 1 }}</a
+      >
+      {% if current_page < total_pages - 1 %}
+      <a
+        href="/search?page={{ current_page + 2 }}&query={{ query }}"
+        class="number"
+        >{{ current_page + 2 }}</a
+      >
+      {% endif %} {% if current_page < total_pages - 3 %} {% if current_page <
+      total_pages - 4 %}
+      <span class="pagination-dots">...</span>
+      {% endif %}
+      <a href="/search?page={{ total_pages }}&query={{ query }}" class="number"
+        >{{ total_pages }}</a
+      >
+      {% endif %}
+      <a
+        href="/search?page={{ current_page + 1 }}&query={{ query }}"
+        class="next"
         >Next</a
       >
       {% endif %}

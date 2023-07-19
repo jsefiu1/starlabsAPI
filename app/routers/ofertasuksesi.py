@@ -7,7 +7,7 @@ from app.scrapers.ofertasuksesi import scrape
 from typing import Optional
 from math import ceil
 
-router = APIRouter(tags=["ofertasukesi"])
+router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
 
 @router.get("/ofertasuksesi/html", response_class=HTMLResponse)
@@ -31,8 +31,44 @@ def get_ofertasuksesi_html(request: Request, page: Optional[int] = Query(1, ge=1
 
     return rendered_html
     
+# @router.get("/search", response_class=HTMLResponse)
+# def search_offers(query: Optional[str], request: Request, page: Optional[int] = Query(1, ge=1), current_page: Optional[int] = Query(default=1, ge=1)):
+#     format_query = query.title()
+#     items_per_page = 10
+#     check_offers = session.query(Data).filter(Data.location.contains(format_query)).all()
+#     total_items = len(check_offers)
+#     total_pages = ceil(total_items / items_per_page)
+
+#     if query and not check_offers:
+#         template = templates.get_template("ofertasuksesi.html")
+#         rendered_html = template.render(offers=[], current_page=1, pagination_numbers=range(1, 2), total_pages=1, error_message="Location not found")
+
+#         return rendered_html + "Location not found!"
+
+#     if not check_offers:
+#         template = templates.get_template("ofertasuksesi.html")
+#         rendered_html = template.render(offers=[], current_page=1, pagination_numbers=range(1, 2), total_pages=1, error_message="Location not found")
+#         return rendered_html + "Data not found!"
+
+#     if query:
+#         items_per_page = 10
+
+#     start_index = (page - 1) * items_per_page
+#     end_index = start_index + items_per_page
+#     current_offers = check_offers[start_index:end_index]
+
+#     template = templates.get_template("ofertasuksesi.html")
+#     rendered_html = template.render(offers=current_offers, current_page=page, pagination_numbers=range(1, total_pages + 1), total_pages=total_pages)
+
+#     return rendered_html
+
 @router.get("/search", response_class=HTMLResponse)
-def search_offers(query: Optional[str], request: Request, page: Optional[int] = Query(1, ge=1), current_page: Optional[int] = Query(default=1, ge=1)):
+def search_offers(
+    query: Optional[str],
+    request: Request,
+    page: Optional[int] = Query(1, ge=1),
+    current_page: Optional[int] = Query(default=1, ge=1)
+):
     format_query = query.title()
     items_per_page = 10
     check_offers = session.query(Data).filter(Data.location.contains(format_query)).all()
@@ -41,13 +77,24 @@ def search_offers(query: Optional[str], request: Request, page: Optional[int] = 
 
     if query and not check_offers:
         template = templates.get_template("ofertasuksesi.html")
-        rendered_html = template.render(offers=[], current_page=1, pagination_numbers=range(1, 2), total_pages=1, error_message="Location not found")
-
+        rendered_html = template.render(
+            offers=[],
+            current_page=1,
+            pagination_numbers=range(1, 2),
+            total_pages=1,
+            error_message="Location not found"
+        )
         return rendered_html + "Location not found!"
 
     if not check_offers:
         template = templates.get_template("ofertasuksesi.html")
-        rendered_html = template.render(offers=[], current_page=1, pagination_numbers=range(1, 2), total_pages=1, error_message="Location not found")
+        rendered_html = template.render(
+            offers=[],
+            current_page=1,
+            pagination_numbers=range(1, 2),
+            total_pages=1,
+            error_message="Location not found"
+        )
         return rendered_html + "Data not found!"
 
     if query:
@@ -58,13 +105,18 @@ def search_offers(query: Optional[str], request: Request, page: Optional[int] = 
     current_offers = check_offers[start_index:end_index]
 
     template = templates.get_template("ofertasuksesi.html")
-    rendered_html = template.render(offers=current_offers, current_page=page, pagination_numbers=range(1, total_pages + 1), total_pages=total_pages)
+    rendered_html = template.render(
+        offers=current_offers,
+        current_page=page,
+        pagination_numbers=range(1, total_pages + 1),
+        total_pages=total_pages,
+        query=query  # Pass the query parameter to the template
+    )
 
     return rendered_html
 
-
 @router.get("/ofertasuksesi/scrape")
-def offertasuksesi_data(category: str, page: int):
+def ofertasuksesi_data(category: str, page: int):
     return scrape(category=category, page=page)
 
 @router.get("/ofertasuksesi/data")
