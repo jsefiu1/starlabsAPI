@@ -12,7 +12,7 @@ from sqlalchemy.sql.expression import bindparam
 
 
 templates = Jinja2Templates(directory="app/templates")
-router = APIRouter(prefix="/gazetaexpress", tags=["gazetaexpress"])
+router = APIRouter(prefix="/gazetaexpress")
 limit = 10
 
 

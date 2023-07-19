@@ -13,9 +13,9 @@ class ExpressScraper(Scraper):
         scrape_url = f"{self.base_url}/{url_path}/"
         html_text = requests.get(scrape_url).text
         soup = BeautifulSoup(html_text, "lxml")
-        container = soup.find("div", {"class": "row pagingBox_search"})
+        container = soup.find("body")
 
-        lajmet = container.find_all("a", class_="right-post-category")
+        lajmet = container.find_all("a", class_="col-6")
 
         for i, lajme in enumerate(lajmet[offset : offset + limit]):
             name = lajme.find("h3", class_="box__title").text.strip()
