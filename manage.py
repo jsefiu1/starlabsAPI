@@ -1,6 +1,14 @@
 from fastapi import FastAPI
 import uvicorn
-from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, home
+from app.routers import (
+    telegrafi,
+    gjirafa,
+    kosovajob,
+    express,
+    douglas,
+    ofertasuksesi,
+    home,
+)
 from app.models import Base
 from app.utils.database import engine
 from app.tasks import (
@@ -14,7 +22,7 @@ from app.tasks import (
 from app.utils.tasks import site, scheduler
 
 
-app = FastAPI()
+app = FastAPI(title="STARLABS API")
 
 site.mount_app(app)
 
@@ -32,6 +40,7 @@ app.include_router(douglas.router)
 @app.on_event("startup")
 async def startup():
     scheduler.start()
+
 
 Base.metadata.create_all(engine)
 
