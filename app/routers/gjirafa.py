@@ -10,7 +10,7 @@ router = APIRouter(prefix="/gjirafa")
 templates = Jinja2Templates(directory="app/templates")
 limit = 10
 
-@router.get("/scrape")
+@router.post("/scrape")
 async def gjirafa_scrape(url_path: str = Query(default="Sport"), page_numbers: int = Query(default=1)):
     gjirafa_scraper = GjirafaScraper(base_url="https://gjirafamall.com/")
     results = gjirafa_scraper.scrape(url_path=url_path, page_numbers=page_numbers)

@@ -12,7 +12,7 @@ templates = Jinja2Templates(directory="app/templates")
 limit = 10
 
 
-@router.get("/scrape")
+@router.post("/scrape")
 async def scrape_telegrafi(url_path: str, page_numbers: int, get_details: bool = False):
     telegrafi_scraper = TelegrafiScraper(base_url="https://telegrafi.com")
     results = telegrafi_scraper.scrape(

@@ -84,7 +84,7 @@ def search_offers(
 
     return rendered_html
 
-@router.get("/ofertasuksesi/scrape")
+@router.post("/ofertasuksesi/scrape")
 def ofertasuksesi_data(category: str, page: int):
     return scrape(category=category, page=page)
 
