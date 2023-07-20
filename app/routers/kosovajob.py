@@ -12,7 +12,7 @@ router=APIRouter(
 templates = Jinja2Templates(directory="app/templates")
 
 
-@router.get('/scrape')
+@router.post('/scrape')
 def scrape_and_insert(url_path: str):
     kosovajob_scraper=KosovajobScraper(base_url='https://kosovajob.com/')
     results = kosovajob_scraper.scrape(url_path=url_path)

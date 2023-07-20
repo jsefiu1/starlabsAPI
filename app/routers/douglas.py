@@ -11,7 +11,7 @@ templates = Jinja2Templates(directory="app/templates")
 limit = 10
 
 
-@router.get("/scrape")
+@router.post("/scrape")
 async def douglas_scrape(url_path: str= Query(default="Make-up/"), page_numbers: int = Query(default=1)):
     douglas_scraper = DouglasScraper(base_url="https://www.douglas.de")
     results = douglas_scraper.scrape(url_path=url_path, page_numbers=page_numbers)

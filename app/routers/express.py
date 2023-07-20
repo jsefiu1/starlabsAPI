@@ -17,7 +17,7 @@ router = APIRouter(prefix="/gazetaexpress")
 limit = 10
 
 
-@router.get("/scrape")
+@router.post("/scrape")
 async def scrape_express(url_path: str, limit: int, offset: int = 0): 
 
     express_scraper = ExpressScraper(base_url="https://www.gazetaexpress.com")
