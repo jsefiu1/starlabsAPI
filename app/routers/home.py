@@ -18,6 +18,7 @@ async def home(request: Request):
         {"name": "ofertasuksesi", "url": "/ofertasuksesi/html"},
         {"name": "Douglas", "url": "/douglas/view"},
         {"name": "Kosovajobs", "url": "/kosovajobs/view"},
+        {"name": "Express", "url": "/gazetaexpress/view"}
         # Add more navigation items as needed
     ]
     return templates.TemplateResponse(

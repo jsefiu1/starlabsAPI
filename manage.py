@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from app.routers import telegrafi, gjirafa, kosovajob, douglas, ofertasuksesi, home
+from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, home
 from app.models import Base
 from app.utils.database import engine
 from app.tasks import (
@@ -8,7 +8,8 @@ from app.tasks import (
     gjirafa as gjirafa_tasks,
     kosovajob as kosovajob_tasks,
     ofertasuksesi as ofertasuksesi_tasks,
-    douglas as douglas_tasks
+    douglas as douglas_tasks,
+    express as express_tasks,
 )
 from app.utils.tasks import site, scheduler
 
@@ -22,6 +23,8 @@ app.include_router(gjirafa.router)
 app.include_router(telegrafi.router)
 app.include_router(kosovajob.router)
 app.include_router(ofertasuksesi.router)
+
+app.include_router(express.router)
 
 app.include_router(douglas.router)
 
