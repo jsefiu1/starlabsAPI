@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request,Query
+from fastapi import APIRouter, Request, Query
 from sqlalchemy import func
 from app.utils.database import session
 from app.models.kosovajob import Job
@@ -7,31 +7,34 @@ import requests
 from fastapi.templating import Jinja2Templates
 from typing import Optional
 from math import ceil
-router=APIRouter(
-    prefix='/kosovajobs',)
+
+router = APIRouter(
+    prefix="/kosovajobs",
+)
 templates = Jinja2Templates(directory="app/templates")
 
 
-@router.post('/scrape')
-def scrape_and_insert(url_path: str):
-    kosovajob_scraper=KosovajobScraper(base_url='https://kosovajob.com/')
-    results = kosovajob_scraper.scrape(url_path=url_path)
-    kosovajob_scraper.save_to_db(results=results,session=session)
+@router.post("/scrape")
+def scrape_and_insert():
+    kosovajob_scraper = KosovajobScraper(base_url="https://kosovajob.com/")
+    results = kosovajob_scraper.scrape()
+    kosovajob_scraper.save_to_db(results=results, session=session)
     return results
 
-@router.get('/data')
+
+@router.get("/data")
 def kosovajob_data(
     title: str = Query(None),
     city: str = Query(None),
     offset: int = Query(None),
-    limit: int = Query(None)
+    limit: int = Query(None),
 ):
     query = session.query(Job)
 
     if title and city:
         query = query.filter(
             func.lower(Job.title).contains(title.lower()),
-            func.lower(Job.city).contains(city.lower())
+            func.lower(Job.city).contains(city.lower()),
         )
     elif title:
         query = query.filter(func.lower(Job.title).contains(title.lower()))
@@ -58,25 +61,25 @@ def kosovajob_data(
     return {"results": results, "total_pages": total_pages}
 
 
-
-
-@router.get('/view')
+@router.get("/view")
 def dashboard(
     request: Request,
-    jobtitle: Optional[str] ='',
-    city: Optional[str] = '',
-    page: int = Query(1, ge=1), 
-    page_size: int = Query(10, ge=1), 
+    jobtitle: Optional[str] = "",
+    city: Optional[str] = "",
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1),
 ):
     query = session.query(Job)
     if jobtitle and city:
-        query = query.filter(func.lower(Job.title).contains(jobtitle.lower()), func.lower(Job.city).contains(city.lower()))
+        query = query.filter(
+            func.lower(Job.title).contains(jobtitle.lower()),
+            func.lower(Job.city).contains(city.lower()),
+        )
     elif jobtitle:
         query = query.filter(func.lower(Job.title).contains(jobtitle.lower()))
     elif city:
         query = query.filter(func.lower(Job.city).contains(city.lower()))
 
-    
     total_jobs = query.count()
     total_pages = ceil(total_jobs / page_size)
 
@@ -101,14 +104,17 @@ def dashboard(
     query = query.offset(offset).limit(page_size)
     jobs = query.all()
 
-    return templates.TemplateResponse('kosovajob.html', {
-        'request': request,
-        'jobs': jobs,
-        'jobtitle': jobtitle,
-        'city': city,
-        'page': page,
-        'page_size': page_size,
-        'total_pages': total_pages,
-        'start_page': start_page,
-        'end_page': end_page,
-    })
+    return templates.TemplateResponse(
+        "kosovajob.html",
+        {
+            "request": request,
+            "jobs": jobs,
+            "jobtitle": jobtitle,
+            "city": city,
+            "page": page,
+            "page_size": page_size,
+            "total_pages": total_pages,
+            "start_page": start_page,
+            "end_page": end_page,
+        },
+    )
