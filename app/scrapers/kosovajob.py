@@ -8,8 +8,8 @@ from datetime import date
 
 
 class KosovajobScraper(Scraper):
-    def __init__(self, base_url: str):
-        super().__init__(base_url)
+    def init(self, base_url: str):
+        super().init(base_url)
 
     def scrape(self, url_path: str):
         current_date = date.today()

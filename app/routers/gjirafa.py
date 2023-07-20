@@ -50,9 +50,7 @@ async def gjirafa_data(
     return {"results": results, "total_pages": total_pages}
 
 @router.get("/view")
-async def gjirafa_view(
-    request: Request,
-    title_contains: str = None,
+async def gjirafa_view(request: Request, title_contains: str = None,
     limit_price: str = None,  # Change the type to string
     page: int = 1,
 ):
