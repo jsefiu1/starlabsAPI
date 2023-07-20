@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Express</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container" style="padding: 10px;">
+        <form class="search-form d-flex" action="{{ url_for('view') }}" method="get">
+            <input class="form-control me-2" type="text" id="title_contains" name="title_contains" placeholder="Enter title...">
+            <button class="btn btn-primary" type="submit">Search</button>
+          </form>          
+    
+        <table class="table mt-5">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Title</th>
+                    <th scope="col">Date Scraped</th>
+                    <th scope="col">Link</th>
+                </tr>
+            </thead>
+            <tbody id="searchResults">
+                {% for lajme in results %}
+                <tr>
+                    <td>{{ lajme['id'] }}</td>
+                    <td>{{ lajme['name'] }}</td>
+                    {% if lajme.date_scraped %}
+                    <td>{{ lajme.date_scraped.strftime('%Y-%m-%d %H:%M') }}</td>
+                    {% else %}
+                    <td>None</td>
+                    {% endif %}
+                    <td><a href="{{lajme.details}}" target="_blank">Link</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination" style="margin: auto; width: fit-content;">
+        <ul class="pagination">
+            {% if current_page > 1 %}
+              <li class="page-item">
+                <a class="page-link" href="/gazetaexpress/view?page={{ current_page - 1 }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}">Previous</a>
+              </li>
+            {% endif %}
+        
+            {% if total_pages <= 7 %}
+              {% for page in range(1, total_pages + 1) %}
+                {% if page == current_page %}
+                  <li class="page-item active" aria-current="page">
+                    <span class="page-link">{{ page }}</span>
+                  </li>
+                {% else %}
+                  <li class="page-item">
+                    <a class="page-link" href="/gazetaexpress/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}">{{ page }}</a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            {% else %}
+              {% if current_page <= 4 %}
+                {% for page in range(1, current_page + 3) %}
+                  {% if page == current_page %}
+                    <li class="page-item active" aria-current="page">
+                      <span class="page-link">{{ page }}</span>
+                    </li>
+                  {% else %}
+                    <li class="page-item">
+                      <a class="page-link" href="/gazetaexpress/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}">{{ page }}</a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+                <li class="page-item disabled">
+                  <span class="page-link">...</span>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="/gazetaexpress/view?page={{ total_pages }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}">{{ total_pages }}</a>
+                </li>
+              {% else %}
+                <li class="page-item">
+                  <a class="page-link" href="/gazetaexpress/view?page=1{% if title_contains %}&title_contains={{ title_contains }}{% endif %}">1</a>
+                </li>
+                <li class="page-item disabled">
+                  <span class="page-link">...</span>
+                </li>
+                {% for page in range(total_pages - 2, total_pages + 1) %}
+                  {% if page == current_page %}
+                    <li class="page-item active" aria-current="page">
+                      <span class="page-link">{{ page }}</span>
+                    </li>
+                  {% else %}
+                    <li class="page-item">
+                      <a class="page-link" href="/gazetaexpress/view?page={{ page }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}">{{ page }}</a>
+                    </li>
+                  {% endif %}
+                {% endfor %}
+              {% endif %}
+            {% endif %}
+        
+            {% if current_page < total_pages %}
+              <li class="page-item">
+                <a class="page-link" href="/gazetaexpress/view?page={{ current_page + 1 }}{% if title_contains %}&title_contains={{ title_contains }}{% endif %}">Next</a>
+              </li>
+            {% endif %}
+          </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+</body>
+</html>
