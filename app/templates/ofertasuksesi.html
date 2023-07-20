@@ -127,6 +127,16 @@
       table td a:hover {
         background-color: #228be6;
       }
+
+      table tr th:last-child {
+        text-align: center;
+      }
+      table tr th:nth-child(2) {
+        text-align: center;
+      }
+      table tr th:nth-child(3) {
+        text-align: center;
+      }
     </style>
   </head>
 
@@ -150,6 +160,7 @@
           <th>Title</th>
           <th>Description</th>
           <th>Location</th>
+          <th>Date Scraped</th>
         </tr>
       </thead>
       {% for offer in offers %}
@@ -159,9 +170,8 @@
           <td class="table-colors" style="text-align: center">
             <a href="{{ offer.info }}" target="_blank">Description link</a>
           </td>
-          <td class="table-colors" style="text-align: center">
-            {{ offer.location }}
-          </td>
+          <td class="table-colors" style="text-align: center">{{ offer.location }}</td>
+          <td class="table-colors" style="text-align: center">{{ offer['date_scraped'].strftime('%Y-%m-%d %H:%M') }}</td>
         </tr>
       </tbody>
       {% endfor %}
@@ -216,10 +226,13 @@
         class="prev"
         >Previous</a
       >
+      {% if current_page == 4 %}
+      <a href="/search?page=1&query={{ query }}">1</a>
+      {% endif %}
       {% if current_page > 4 %}
       <a href="/search?page=1&query={{ query }}" class="number">1</a>
-      {% if current_page > 5 %}
       <span class="pagination-dots">...</span>
+      {% if current_page > 5 %}
       {% endif %} {% endif %} {% if current_page > 2 %}
       <a
         href="/search?page={{ current_page - 2 }}&query={{ query }}"

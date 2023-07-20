@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String, Text, DateTime
 from app.models import Base
 
 class Data(Base):
@@ -8,3 +8,4 @@ class Data(Base):
     info = Column(String)
     location = Column(String)
     image = Column(Text)
+    date_scraped = Column(DateTime)

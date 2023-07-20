@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from app.routers import telegrafi, gjirafa, kosovajob, home, ofertasuksesi
+from app.routers import telegrafi, gjirafa, kosovajob, douglas, ofertasuksesi, home
 from app.models import Base
 from app.utils.database import engine
 from app.tasks import (
@@ -8,24 +8,27 @@ from app.tasks import (
     gjirafa as gjirafa_tasks,
     kosovajob as kosovajob_tasks,
     ofertasuksesi as ofertasuksesi_tasks,
+    douglas as douglas_tasks
 )
 from app.utils.tasks import site, scheduler
+
 
 app = FastAPI()
 
 site.mount_app(app)
-
-
-@app.on_event("startup")
-async def startup():
-    scheduler.start()
-
 
 app.include_router(home.router)
 app.include_router(gjirafa.router)
 app.include_router(telegrafi.router)
 app.include_router(kosovajob.router)
 app.include_router(ofertasuksesi.router)
+
+app.include_router(douglas.router)
+
+
+@app.on_event("startup")
+async def startup():
+    scheduler.start()
 
 Base.metadata.create_all(engine)
 
