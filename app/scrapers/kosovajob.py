@@ -11,11 +11,11 @@ class KosovajobScraper(Scraper):
     def init(self, base_url: str):
         super().init(base_url)
 
-    def scrape(self, url_path: str):
+    def scrape(self):
         current_date = date.today()
         date_of_scrape = current_date.strftime("%d/%m/%Y")
         results = []
-        response = requests.get(url_path)
+        response = requests.get(self.base_url)
         soup = BeautifulSoup(response.content, "html.parser")
 
         parent_divs = soup.find_all('div', class_='jobListCnts')

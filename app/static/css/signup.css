@@ -1,0 +1,22 @@
+.login,
+.image {
+  min-height: 100vh;
+}
+
+.text {
+  margin-top: 20px;
+}
+
+.bg-image {
+  background-image: url("../img/signup.png");
+  background-size: cover;
+  background-position: center center;
+}
+
+.icon {
+  font-size: 30px;
+}
+
+.error {
+  color: #dc3545;
+}

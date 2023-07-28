@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 import uvicorn
-from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, home
+from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, home, auth
 from app.models import Base
 from app.utils.database import engine
 from app.tasks import (
@@ -12,9 +12,10 @@ from app.tasks import (
     express as express_tasks,
 )
 from app.utils.tasks import site, scheduler
+from fastapi.staticfiles import StaticFiles
 
-
-app = FastAPI()
+app = FastAPI(title="StarLabs API")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 site.mount_app(app)
 
@@ -23,11 +24,9 @@ app.include_router(gjirafa.router)
 app.include_router(telegrafi.router)
 app.include_router(kosovajob.router)
 app.include_router(ofertasuksesi.router)
-
+app.include_router(auth.router)
 app.include_router(express.router)
-
 app.include_router(douglas.router)
-
 
 @app.on_event("startup")
 async def startup():
