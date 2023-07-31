@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Form
+from fastapi import APIRouter, Depends, HTTPException, Form, Request
 from fastapi.responses import FileResponse, Response
+from fastapi.templating import Jinja2Templates
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from pydantic import BaseModel
@@ -31,13 +32,38 @@ router = APIRouter(tags=["User Data"])
 #     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 #     return encoded_jwt
 
+
+templates = Jinja2Templates(directory="app/templates")
 @router.get("/login")
-def show_login_form():
-    return FileResponse("app/templates/index.html")
+def show_login_form(request: Request):
+    # return FileResponse("app/templates/index.html")
+    file_path = "img/login.jpg"
+    bootstrap_path = "css/bootstrap.min.css"
+    css_style_path = "css/styles.css"
+    js_bs_path = "js/bootstrap.bundle.min.js"
+    script_js_path = "js/script.js"
+    login_js_path = "js/login.js"
+    return templates.TemplateResponse("index.html", {"request": request, "file_path": file_path,
+            "bootstrap_path": bootstrap_path, "css_style": css_style_path, "js_bs_path": js_bs_path,
+            "script_js": script_js_path, "login_js_path": login_js_path})
 
 @router.get("/register")
-def signup_html():
-    return FileResponse("app/templates/signup.html")
+def signup_html(request: Request):
+    bootstrap_path = "css/bootstrap.min.css"
+    css_styel_path = "css/signup.css"
+    img_path = "img/signup.jpg"
+    js_bs_path = "js/bootstrap.bundle.min.js"
+    script_js = "js/script.js"
+    signup_js = "js/signup.js"
+    login_path = "index.html"
+    return templates.TemplateResponse("signup.html", {"request": request, 
+            "bootstrap": bootstrap_path, "css": css_styel_path, "img_path": img_path, 
+            "js_bs_path": js_bs_path, "script_js": script_js, "signup_js": signup_js,
+            "login_path": login_path
+            })
+
+
+
 
 # @router.post("/process-signup")
 # def process_signup(username: str = Form(...), email: str = Form(...), password: str = Form(...)):

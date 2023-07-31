@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.templating import Jinja2Templates
 import uvicorn
 from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, home, auth
 from app.models import Base
@@ -15,7 +16,8 @@ from app.utils.tasks import site, scheduler
 from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(title="StarLabs API")
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+templates = Jinja2Templates(directory="templates")
 
 site.mount_app(app)
 
