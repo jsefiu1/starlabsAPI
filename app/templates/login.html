@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Log in</title>
   <script src="https://kit.fontawesome.com/fc20eca1ac.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="{{ url_for('static', path=bootstrap_path) }}">
-  <link rel="stylesheet" href="{{ url_for('static', path=css_style) }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
 </head>
 <body>
   <div class="container-fluid">
     <div class="row no-gutter">
         <div class="col-md-6 d-none d-md-flex bg-image">
-          <img src="{{ url_for('static', path=file_path) }}" alt="" class="img-fluid">
+          <img src="{{ url_for('static', path='/img/login.jpg') }}" alt="" class="img-fluid">
         </div>
         <div class="col-md-6 bg-light">
             <div class="login d-flex align-items-center py-5">
@@ -22,17 +22,17 @@
                         <div class="col-lg-10 col-xl-7 mx-auto parent">
                             <h3 class="display-4 text-center"><span class="typewritter fw-bolder"></span></h3>
                             <p class="text-muted mb-4 text-center">log in to get started</p>
-                            <form class="needs-validation" novalidate>
+                            <form action="/login" method="post">
                                 <div class="form-group mb-3 position-relative">
                                 <div class="input-icon-container">
-                                  <input id="inputEmail" type="email" placeholder="Email address" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
+                                  <input id="username" name="username" type="text" placeholder="Username" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
                                   <span class="position-absolute top-50 translate-middle-y error" style="margin-left: 50px;"></span>
                                   <i class="fa-solid fa-envelope position-absolute top-50 translate-middle-y" style="margin-left: 20px;"></i>
                                 </div>
                               </div>
                                 <div class="form-group mb-3 position-relative">
                                   <div class="input-icon-container">
-                                    <input id="inputPassword" type="password" placeholder="Password" required class="px-5 form-control rounded-pill border-0 shadow-sm px-4 text-primary">
+                                    <input id="inputPassword" name="password" type="password" placeholder="Password" required class="px-5 form-control rounded-pill border-0 shadow-sm px-4 text-primary">
                                     <span class="position-absolute top-50 translate-middle-y error" style="margin-left: 50px;"></span>
                                     <i class="fa-sharp fa-solid fa-lock position-absolute top-50 translate-middle-y" style="margin-left: 20px; position: static;"></i>
                                   </div>
@@ -42,11 +42,14 @@
                                     <label for="customCheck1" class="custom-control-label">Remember Me</label>
                                 </div>
                                 <div class="create-acc-link ms-2">
-                                  <p class="acc-p">Don't have an account? create one <a href="signup.html" class="link">Sign up</a></p>
+                                  <p class="acc-p">Don't have an account? create one <a href="/register" class="link">Sign up</a></p>
                                 </div>
                                 <button type="submit" class="btn btn-outline-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm" type="submit">Log in</button>
                                 <div class="text-center d-flex justify-content-between mt-4">
                             </form>
+                            {% if invalid %}
+                              <p style="color: #eb4823;">Invalid username or password. Please try again</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>  
@@ -55,7 +58,7 @@
     </div>
   </div>
   <script src="https://unpkg.com/typewriter-effect/dist/core.js"></script>
-  <script src="{{ url_for('static', path=js_bs_path) }}"></script>
-  <script src="{{ url_for('static', path=script_js) }}"></script>
-  <script src="{{ url_for('static', path=login_js_path) }}"></script>
+  <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static', path='/js/script.js') }}"></script>
+  <script src="{{ url_for('static', path='js/login.js') }}"></script>
 </html>

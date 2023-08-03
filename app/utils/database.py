@@ -23,3 +23,4 @@ admin_site_settings = Settings(database_url=DATABASE_URL)
 engine = create_engine(DATABASE_URL)
 
 session = sessionmaker(bind=engine)()
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

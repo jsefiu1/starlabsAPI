@@ -1,99 +1,110 @@
-from fastapi import APIRouter, Depends, HTTPException, Form, Request
-from fastapi.responses import FileResponse, Response
+from fastapi import APIRouter, FastAPI, Depends, HTTPException, Form, Request, status
+from fastapi.responses import FileResponse, Response, RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi.security import OAuth2PasswordBearer
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
-from pydantic import BaseModel
 from passlib.context import CryptContext
-# from app.models.auth import SignupData
-from typing import Optional
+from fastapi_login import LoginManager
+from app.utils.database import session, SessionLocal
+from app.models.auth import Register
 from datetime import datetime, timedelta
-# from jose import jwt, JWTError
-from app.utils.database import session
+
+
+SECRET_KEY = "78a061b526f62f90728cc54090af38cfa8c0228cc81aa2a2"
+ACCESS_TOKEN_EXPIRES_MINUTES = 60
+manager = LoginManager(secret=SECRET_KEY, token_url="/login", use_cookie=True)
+manager.cookie_name = "auth"
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 router = APIRouter(tags=["User Data"])
-# pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-# SECRET_KEY = "6b305759f35f338a9734cc73a756256b1579fa0248a3f954886dd107e0190ca5"
-# ALGORITHM = "HS256"
-# ACCESS_TOKEN_EXPIRE_MINUTES = 20
-# oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
-
-# class Token(BaseModel):
-#     access_token: str
-#     token_type: str
-
-# class TokenData(BaseModel):
-#     username: Optional[str] = None
-
-# def generate_token(data: dict):
-#     to_encode = data.copy()
-#     expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-#     to_encode.update({"exp": expire})
-#     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-#     return encoded_jwt
-
-
+app = FastAPI()
 templates = Jinja2Templates(directory="app/templates")
-@router.get("/login")
-def show_login_form(request: Request):
-    # return FileResponse("app/templates/index.html")
-    file_path = "img/login.jpg"
-    bootstrap_path = "css/bootstrap.min.css"
-    css_style_path = "css/styles.css"
-    js_bs_path = "js/bootstrap.bundle.min.js"
-    script_js_path = "js/script.js"
-    login_js_path = "js/login.js"
-    return templates.TemplateResponse("index.html", {"request": request, "file_path": file_path,
-            "bootstrap_path": bootstrap_path, "css_style": css_style_path, "js_bs_path": js_bs_path,
-            "script_js": script_js_path, "login_js_path": login_js_path})
 
-@router.get("/register")
-def signup_html(request: Request):
-    bootstrap_path = "css/bootstrap.min.css"
-    css_styel_path = "css/signup.css"
-    img_path = "img/signup.jpg"
-    js_bs_path = "js/bootstrap.bundle.min.js"
-    script_js = "js/script.js"
-    signup_js = "js/signup.js"
-    login_path = "index.html"
-    return templates.TemplateResponse("signup.html", {"request": request, 
-            "bootstrap": bootstrap_path, "css": css_styel_path, "img_path": img_path, 
-            "js_bs_path": js_bs_path, "script_js": script_js, "signup_js": signup_js,
-            "login_path": login_path
-            })
+def get_hashed_password(plain_password):
+    return pwd_context.hash(plain_password)
 
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
 
+@manager.user_loader()
+def get_user_from_db(username: str):
+    db = SessionLocal()
+    user = db.query(Register.username == username).first()
+    return user
 
-
-# @router.post("/process-signup")
-# def process_signup(username: str = Form(...), email: str = Form(...), password: str = Form(...)):
-#     hashed_password = pwd_context.hash(password)
-#     new_user = SignupData(username=username, email=email, password=hashed_password)
-#     session.add(new_user)
-#     session.commit()
-#     session.refresh(new_user)
-#     return {"Message": "New account added successfully!"}
-
-# @router.post("/login")
-# def login(username: str = Form(...), password: str = Form(...) ,):
-#     user = session.query(SignupData).filter(SignupData.username == username).first()
-#     if not user:
-#         raise HTTPException(status_code=404, detail="Username not found")
-#     if not pwd_context.verify(password, user.password):
-#         raise HTTPException(status_code=404, detail="Invalid password")
-#     else:
-#        access_token = generate_token(data={"sub": user.username})
-#        return {"access_token": access_token, "token_type": "bearer"}
+def authenticate_user(username: str, password: str):
+    db = SessionLocal()
+    user = db.query(Register).filter(Register.username == username).first()
+    if not user:
+        return None
     
-# def get_current_user(token: Form(...) = Depends(oauth2_scheme)):
-#     credential_exception = HTTPException(status_code=401, detail="Invalid auth credentials", headers={"WWW-Authenticate": "Bearer"})
-#     try: 
-#         payload = jwt.decode(token, SECRET_KEY, algorithms=ALGORITHM)
-#         username:str = payload.get("sub")
-#         if username is None:
-#             raise credential_exception
-#         else:
-#             token_data = TokenData(username=username)
-#             return token_data
-#     except JWTError:
-#         raise credential_exception
+    if not verify_password(plain_password=password, hashed_password=user.password):
+        return None
+    
+    return user
+    
+
+@router.get("/login", response_class=HTMLResponse)
+def show_login_form(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+@router.post("/login")
+def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
+    user = authenticate_user(username=form_data.username, password=form_data.password)
+    if not user:
+        return templates.TemplateResponse("login.html", {"request": request, "invalid": True}, status_code=status.HTTP_401_UNAUTHORIZED)
+    
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRES_MINUTES)
+    access_token = manager.create_access_token(data={"sub": user.username}, expires=access_token_expires)
+    resp = RedirectResponse(url="/home", status_code=status.HTTP_302_FOUND)
+    manager.set_cookie(resp, access_token)
+    return resp
+
+
+@router.get("/register", response_class=HTMLResponse)
+def register_html(request: Request):
+    return templates.TemplateResponse("register.html", {"request": request})
+
+@router.post("/register", response_class=HTMLResponse)
+def register(
+    request: Request,
+    first_name: str = Form(...),
+    last_name: str = Form(...),
+    username: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...)
+):
+    db = SessionLocal()
+    hashed_password = get_hashed_password(password)
+    new_user = Register(first_name=first_name, last_name=last_name, username=username, email=email, password=hashed_password)
+    db.add(new_user)
+    db.commit()
+
+    return RedirectResponse(url="/login", status_code=302)
+
+class NotAuthenticatedException(Exception):
+    pass
+
+def not_authenticated_exception_handler(request, exception):
+    return RedirectResponse("/login")
+
+manager.not_authenticated_exception = NotAuthenticatedException
+app.add_exception_handler(NotAuthenticatedException, not_authenticated_exception_handler)
+@router.get("/data")
+def data(request: Request):
+    navigation_items = [
+        {"name": "Dashboard", "url": "/data"},
+        {"name": "Telegrafi", "url": "/telegrafi/view"},
+        {"name": "Gjirafa", "url": "/gjirafa/view"},
+        {"name": "ofertasuksesi", "url": "/ofertasuksesi/html"},
+        {"name": "Douglas", "url": "/douglas/view"},
+        {"name": "Kosovajobs", "url": "/kosovajobs/view"},
+        {"name": "Express", "url": "/gazetaexpress/view"}
+        # Add more navigation items as needed
+    ]
+    return templates.TemplateResponse(
+        "data.html", {"request": request, "navigation_items": navigation_items}
+    )
+
+@router.get("/")
+def home(request: Request):
+    return templates.TemplateResponse("home.html", {"request": request})

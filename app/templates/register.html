@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
   <script src="https://kit.fontawesome.com/fc20eca1ac.js" crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="{{ url_for('static', path=bootstrap) }}">
-  <link rel="stylesheet" href="{{ url_for('static', path=css) }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', path='/css/signup.css') }}">
 </head>
 <body>
   <div class="container-fluid">
     <div class="row no-gutter">
       <div class="col-md-6 d-none d-md-flex bg-image">
-        <img src="{{ url_for('static', path=img_path) }}" alt="" class="img-fluid">
+        <img src="{{ url_for('static', path='/img/signup.jpg') }}" alt="" class="img-fluid">
       </div>
       <div class="col-md-6 bg-light">
         <div class="login d-flex align-items-center py-5">
@@ -22,38 +22,38 @@
               <div class="col-lg-10 col-xl-7 mx-auto parent">
                 <h3 class="display-4 text-center"><span class="typewriter fw-bolder"></span></h3>
                 <p class="text-muted mb-4 text-center">Register to get started</p>
-                <form class="needs-validation" novalidate>
+                <form action="/register" method="post">
                   <div class="form-group mb-3 position-relative">
                     <div class="input-icon-container">
-                      <input id="inputFirstName" type="text" placeholder="First Name" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
+                      <input id="first_name" name="first_name" type="text" placeholder="First Name" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
                       <span class="position-absolute top-50 translate-middle-y error" style="margin-left: 50px;"></span>
                       <i class="fa-solid fa-user position-absolute top-50 translate-middle-y" style="margin-left: 20px;"></i>
                     </div>
                   </div>
                   <div class="form-group mb-3 position-relative">
                     <div class="input-icon-container">
-                      <input id="inputLastName" type="text" placeholder="Last Name" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
+                      <input id="last_name" name="last_name" type="text" placeholder="Last Name" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
                       <span class="position-absolute top-50 translate-middle-y error" style="margin-left: 50px;"></span>
                       <i class="fa-solid fa-user position-absolute top-50 translate-middle-y" style="margin-left: 20px;"></i>
                     </div>
                   </div>
                   <div class="form-group mb-3 position-relative">
                     <div class="input-icon-container">
-                      <input id="inputUsername" type="text" placeholder="Username" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
+                      <input id="username" name="username" type="text" placeholder="Username" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
                       <span class="position-absolute top-50 translate-middle-y error" style="margin-left: 50px;"></span>
                       <i class="fa-solid fa-user position-absolute top-50 translate-middle-y" style="margin-left: 20px;"></i>
                     </div>
                   </div>
                   <div class="form-group mb-3 position-relative">
                     <div class="input-icon-container">
-                      <input id="inputEmail" type="email" placeholder="Email address" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
+                      <input id="email" name="email" type="email" placeholder="Email address" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
                       <span class="position-absolute top-50 translate-middle-y error" style="margin-left: 50px;"></span>
                       <i class="fa-solid fa-envelope position-absolute top-50 translate-middle-y" style="margin-left: 20px;"></i>
                     </div>
                   </div>
                   <div class="form-group mb-3 position-relative">
                     <div class="input-icon-container">
-                      <input id="inputPassword" type="password" placeholder="Password" required class="px-5 form-control rounded-pill border-0 shadow-sm px-4 text-primary">
+                      <input id="password" name="password" type="password" placeholder="Password" required class="px-5 form-control rounded-pill border-0 shadow-sm px-4 text-primary">
                       <span class="position-absolute top-50 translate-middle-y error" style="margin-left: 50px;"></span>
                       <i class="fa-sharp fa-solid fa-lock position-absolute top-50 translate-middle-y" style="margin-left: 20px; position: static;"></i>
                     </div>
@@ -73,11 +73,10 @@
                   </div>
                   <div class="create-acc-link ms-2">
                     <p class="acc-p">Already have an account? 
-                      <a href="index.html" class="link">Log in</a>
+                      <a href="/login" class="link">Log in</a>
                     </p>
                   </div>
-                  <button type="submit" class="btn btn-outline-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm">Register</button>
-                  <div class="text-center d-flex justify-content-between mt-4">
+                  <button type="submit" class="btn btn-outline-primary text-uppercase mb-2 rounded-pill shadow-sm">Register</button>
                 </form>
               </div>
             </div>
@@ -87,8 +86,8 @@
     </div>
   </div>
 
-  <script src="{{ url_for('static', path=js_bs_path) }}"></script>
+  <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
   <script src="https://unpkg.com/typewriter-effect/dist/core.js"></script>
-  <script src="{{ url_for('static', path=script_js) }}"></script>
-  <script src="{{ url_for('static', path=signup_js) }}"></script>
+  <script src="{{ url_for('static', path='/js/script.js') }}"></script>
+  <script src="{{ url_for('static', path='/js/signup.js') }}"></script>
 </html>

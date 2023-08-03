@@ -21,7 +21,7 @@ templates = Jinja2Templates(directory="templates")
 
 site.mount_app(app)
 
-app.include_router(home.router)
+# app.include_router(home.router)
 app.include_router(gjirafa.router)
 app.include_router(telegrafi.router)
 app.include_router(kosovajob.router)
