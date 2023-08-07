@@ -4,11 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>StarLabs API</title>
-    <script
-      src="https://kit.fontawesome.com/fc20eca1ac.js"
-      crossorigin="anonymous"
-    ></script>
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/img/starlabs-logo.jpg') }}">
+    <script src="https://kit.fontawesome.com/fc20eca1ac.js" crossorigin="anonymous"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap.min.css') }}" />
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}" />
     <style>
       /* Stili për breakpointin "md" */
       @media (max-width: 991px) {
@@ -18,38 +18,45 @@
       }
     </style>
   </head>
-  <body>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+  <body data-bs-spy="scroll" data-bs-target="#navbar-scroll">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow fixed-top" id="navbar-scroll">
       <div class="container">
-        <a href="#" class="navbar-brand">StarLabs API</a>
-        <button
-          class="navbar-toggler"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbar"
-        >
+        <a href="#home" class="navbar-brand fw-bolder">
+          <img src="{{ url_for('static', path='/img/starlabs-logo.jpg') }}" alt="" class="img-fluid" style="height: 60px;">
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
           <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbar">
+        <div class="collapse navbar-collapse fw-bolder" id="navbar">
           <ul class="navbar-nav ms-auto my-3 my-md-0">
             <li class="nav-item">
-              <a href="#home" class="nav-link active">Home</a>
+              <a href="#home" class="nav-link navigation-link">Home</a>
             </li>
             <li class="nav-item">
-              <a href="#about" class="nav-link">About</a>
+              <a href="#about" class="nav-link navigation-link">About</a>
             </li>
             <li class="nav-item">
-              <a href="#services" class="nav-link">Services</a>
+              <a href="#services" class="nav-link navigation-link">Services</a>
             </li>
           </ul>
 
           <ul class="navbar-nav ms-auto my-3 my-md-0">
-            <li class="nav-item">
-              <a href="/login" class="nav-link">Log in</a>
-            </li>
-            <li class="nav-item">
-              <a href="/register" class="nav-link">Register</a>
-            </li>
+              {% if request.cookies.get("auth") == "None" %}
+              <li class="nav-item">
+                <a href="/login" class="nav-link navigation-link">Log in</a>
+              </li>
+            {% endif %}
+            {% if request.cookies.get("auth") == "None" %}
+              <li class="nav-item">
+                <a href="/register" class="nav-link navigation-link">Register</a>
+              </li>
+            {% endif %}
+            {% if request.cookies.get("auth") != "None" %}
+              <li class="nav-item">
+                <a href="/logout" class="nav-link navigation-link">Log Out</a>
+              </li>
+            {% endif %}
           </ul>
         </div>
       </div>
@@ -58,39 +65,33 @@
     <section id="home" class="bg-light">
       <div class="container">
         <div class="row min-vh-100">
-          <div
-            class="col-lg-6 d-flex flex-column justify-content-center align-self-center order-1 order-lg-0 align-md pb-5 pb-lg-0"
-          >
-            <h2>Welcome to our our API</h2>
-            <h4 class="fw-4">StarLabs API indeed all you need</h4>
+          <div class="col-lg-6 d-flex flex-column justify-content-center align-self-center order-1 order-lg-0 align-md pb-5 pb-lg-0">
+            <h2 data-aos="fade-up">Welcome to our API</h2>
+            <h4 class="fw-4" data-aos="fade-up" data-aos-delay="200">StarLabs API indeed all you need</h4>
             <div>
-              <a href="/data" class="btn btn-info btn-lg text-white fw-bold">
+              <a href="/data" class="btn btn-info btn-lg mt-3 mt-lg-2 text-white fw-bold" data-aos="fade-up" data-aos-delay="300">
                 Try it out <i class="fas fa-long-arrow-alt-right ms-1"></i>
               </a>
             </div>
           </div>
           <div class="col-lg-6 d-flex flex-column align-self-center">
-            <img src="{{ url_for('static', path='/img/hero.jpg') }}" alt="Home image" class="img-fluid" />
+            <img src="{{ url_for('static', path='/img/hero.jpg') }}" alt="Home image" class="img-fluid" data-aos="fade-left"/>
           </div>
         </div>
       </div>
     </section>
 
-    <section id="about" class="pt-5">
+    <section id="about" class="py-5">
       <div class="container">
         <div class="text-center">
-          <h2
-            class="fw-bolder border-bottom border-info border-4 d-inline-block"
-          >
-            About us
-          </h2>
+          <h2 class="fw-bolder border-bottom border-info border-4 d-inline-block" data-aos="zoom-in" data-aos-delay="50">About us</h2>
         </div>
         <div class="row">
           <div class="col-lg-6 d-flex flex-column align-self-center">
-            <img src="{{ url_for('static', path='/img/about.jpg') }}" alt="About image" class="img-fluid" />
+            <img src="{{ url_for('static', path='/img/about.jpg') }}" alt="About image" class="img-fluid" data-aos="fade-right"/>
           </div>
           <div class="col-lg-6 d-flex flex-column align-self-center">
-            <p>
+            <p data-aos="fade-up">
               Welcome to StarLabs API, where innovation meets data! We are a
               dynamic team of 8 passionate individuals who have come together to
               create an exceptional API powered by FastAPI, a Python framework.
@@ -105,6 +106,104 @@
       </div>
     </section>
 
+    <section id="services" class="container py-5">
+        <div class="text-center py-5">
+          <h2 class="fw-bolder border-bottom border-info border-5 d-inline-block pb-1" data-aos="zoom-in">
+          Our services
+          </h2>
+        </div>
+      <div class="row pb-5">
+        <div class="col-lg-6 col-md-12">
+          <div class="shadow-lg p-4 text-center border-bottom border-4 border-info" data-aos="fade-right">
+            <i class="fa-solid fa-database fa-2xl mb-5" style="color: #3e72cc;"></i>
+            <h4 class="fw-bolder fs-3">Comprehensive Data Sources</h4>
+            <p>
+              We pride ourselves on curating an extensive and diverse range of data sources. 
+              By meticulously scraping information from seven reputable websites, we ensure 
+              that you receive reliable, up-to-date, and valuable insights—all in one place. 
+              With our service, you can access data from multiple sites, eliminating the need 
+              to visit each one individually.
+            </p>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-12 mt-5 mt-lg-0">
+          <div class="shadow-lg p-4 text-center border-bottom border-4 border-info" data-aos="fade-left">
+            <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            fill="none" viewBox="0 0 24 24" 
+            stroke-width="1.5" stroke="currentColor" 
+            class="w-6 h-6" style="height: 50px; color: #3e72cc; margin-bottom: 15px;">
+              <path stroke-linecap="round" stroke-linejoin="round" 
+              d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993
+              0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 
+              0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+            </svg>
+            
+            <h4 class="fw-bolder fs-3">Real-Time Updates</h4>
+            <p>
+              Stay ahead with our real-time updates feature. 
+              The data provided through our API is continuously refreshed, delivering 
+              the latest information without any delay. You can trust us to keep you 
+              informed with the most recent data from our partner websites.
+              The data that we have are updated every 6 hours everything is uptodate.
+              What are you waiting for? try it out.
+            </p>
+          </div>
+        </div>
+        
+        <div class="col-lg-6 col-md-12 mt-5">
+          <div class="shadow-lg p-4 text-center border-bottom border-4 border-info" data-aos="fade-right">
+            <i class="fa-solid fa-code-pull-request fa-2xl mb-5" style="color: #3e72cc;"></i>
+            
+            <h4 class="fw-bolder fs-3">Customizable Requests</h4>
+            <p>
+              We believe in empowering our users with flexibility. 
+              Our API allows you to make customized requests, tailoring 
+              the data you receive according to your specific needs. Filter 
+              data based on location, date, category, or any other criteria 
+              that matter to you. This level of personalization ensures that 
+              you get precisely what you require.
+            </p>
+          </div>
+        </div>
+        
+        <div class="col-lg-6 col-md-12 mt-5">
+          <div class="shadow-lg p-4 text-center border-bottom border-4 border-info" data-aos="fade-left">
+            <svg xmlns="http://www.w3.org/2000/svg"
+            stroke="currentColor" viewBox="0 0 24 24" id="Integration"
+            style="color: #3e72cc; height: 50px; margin-bottom: 15px;">
+              <path fill="none" fill-rule="evenodd"" 
+              d="m15.514 11.55-.643.643a1 1 0 0 0 0 1.415l.386.385a1 
+              1 0 0 0 1.414 0l.643-.644 1.8 1.8a7.003 7.003 0 0 0 
+              1.164-8.362l2.178-2.179a1 1 0 0 0 0-1.414L21.17 1.907a1 
+              1 0 0 0-1.414 0l-2.178 2.179A7.003 7.003 0 0 0 9.214 
+              5.25l1.8 1.8-.644.643a1 1 0 0 0 0 1.414l.386.385a1 
+              1 0 0 0 1.414 0l.643-.643 2.702 2.7zM4.9 16.764 
+              2.72 18.942a1 1 0 0 0 0 1.414l1.286 1.286a1 
+              1 0 0 0 1.414 0l2.178-2.178a7.003 7.003 0 
+              0 0 8.364-1.164l-9.9-9.9A7.003 7.003 0 0 
+              0 4.9 16.765z" class="colorStroke4a4a4a 
+              svgStroke">
+              </path>
+            </svg>
+            
+            <h4 class="fw-bolder fs-3">Easy Integration</h4>
+            <p>
+              Seamless integration is at the core of our service. 
+              Our API is designed to be developer-friendly, making it 
+              easy for you to incorporate our data into your projects or 
+              applications. Save time and effort by leveraging our platform 
+              to enrich your own products. If this is what you want then what are
+              you waiting for? Try it out.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
     <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init({duration: 1000});
+    </script>
   </body>
 </html>

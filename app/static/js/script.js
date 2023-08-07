@@ -1,5 +1,5 @@
 var login = document.querySelector(".typewritter");
-var signup = document.querySelector(".typewriter");
+var register = document.querySelector(".typewriter");
 
 var typewriter = new Typewriter(login, {
   loop: true
@@ -13,14 +13,14 @@ typewriter.typeString("LOG IN")
   .pause()
   .start()
 
-var typewriter = new Typewriter(signup, {
+var typewriter = new Typewriter(register, {
   loop: true
 })
 
-typewriter.typeString("SIGN UP")
+typewriter.typeString("Register")
   .pause(2000)
   .deleteAll()
-  .typeString("SIGN UP")
+  .typeString("Register")
   .deleteAll()
   .pause()
   .start()

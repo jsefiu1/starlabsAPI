@@ -4,26 +4,15 @@ from fastapi.templating import Jinja2Templates
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from fastapi_login import LoginManager
+from fastapi_login.exceptions import InvalidCredentialsException
 from app.utils.database import session, SessionLocal
 from app.models.auth import Register
 from datetime import datetime, timedelta
-
 
 SECRET_KEY = "78a061b526f62f90728cc54090af38cfa8c0228cc81aa2a2"
 ACCESS_TOKEN_EXPIRES_MINUTES = 60
 manager = LoginManager(secret=SECRET_KEY, token_url="/login", use_cookie=True)
 manager.cookie_name = "auth"
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-router = APIRouter(tags=["User Data"])
-app = FastAPI()
-templates = Jinja2Templates(directory="app/templates")
-
-def get_hashed_password(plain_password):
-    return pwd_context.hash(plain_password)
-
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
 
 @manager.user_loader()
 def get_user_from_db(username: str):
@@ -41,13 +30,34 @@ def authenticate_user(username: str, password: str):
         return None
     
     return user
-    
 
-@router.get("/login", response_class=HTMLResponse)
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+def get_hashed_password(plain_password):
+    return pwd_context.hash(plain_password)
+
+def verify_password(plain_password, hashed_password):
+    return pwd_context.verify(plain_password, hashed_password)
+
+# router = APIRouter(tags=["User Data"])
+app = FastAPI()
+templates = Jinja2Templates(directory="app/templates")
+
+class NotAuthenticatedException(Exception):
+    pass
+
+def not_authenticated_exception_handler(request, exception):
+    return RedirectResponse(url="/login")
+
+# manager.not_authenticated_handler = NotAuthenticatedException
+manager.not_authenticated_exception = NotAuthenticatedException
+app.add_exception_handler(NotAuthenticatedException, not_authenticated_exception_handler)
+
+@app.get("/login", response_class=HTMLResponse)
 def show_login_form(request: Request):
     return templates.TemplateResponse("login.html", {"request": request})
 
-@router.post("/login")
+@app.post("/login")
 def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(username=form_data.username, password=form_data.password)
     if not user:
@@ -55,16 +65,16 @@ def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRES_MINUTES)
     access_token = manager.create_access_token(data={"sub": user.username}, expires=access_token_expires)
-    resp = RedirectResponse(url="/home", status_code=status.HTTP_302_FOUND)
+    resp = RedirectResponse(url="/", status_code=status.HTTP_302_FOUND)
     manager.set_cookie(resp, access_token)
     return resp
 
 
-@router.get("/register", response_class=HTMLResponse)
+@app.get("/register", response_class=HTMLResponse)
 def register_html(request: Request):
     return templates.TemplateResponse("register.html", {"request": request})
 
-@router.post("/register", response_class=HTMLResponse)
+@app.post("/register", response_class=HTMLResponse)
 def register(
     request: Request,
     first_name: str = Form(...),
@@ -81,16 +91,9 @@ def register(
 
     return RedirectResponse(url="/login", status_code=302)
 
-class NotAuthenticatedException(Exception):
-    pass
 
-def not_authenticated_exception_handler(request, exception):
-    return RedirectResponse("/login")
-
-manager.not_authenticated_exception = NotAuthenticatedException
-app.add_exception_handler(NotAuthenticatedException, not_authenticated_exception_handler)
-@router.get("/data")
-def data(request: Request):
+@app.get("/data")
+def data(request: Request, user: Register = Depends(manager)):
     navigation_items = [
         {"name": "Dashboard", "url": "/data"},
         {"name": "Telegrafi", "url": "/telegrafi/view"},
@@ -102,9 +105,17 @@ def data(request: Request):
         # Add more navigation items as needed
     ]
     return templates.TemplateResponse(
-        "data.html", {"request": request, "navigation_items": navigation_items}
+        "data.html", {"request": request, "navigation_items": navigation_items, "user": user}
     )
-
-@router.get("/")
+        
+@app.get("/")
 def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request})
+
+@app.get("/logout")
+def logout():
+    response = RedirectResponse("/login")
+    manager.set_cookie(response, None)
+    return response
+
+# app.include_router(router)

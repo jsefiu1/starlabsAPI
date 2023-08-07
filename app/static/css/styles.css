@@ -19,21 +19,29 @@
   text-decoration: underline;
 }
 
-/* .input-icon-container {
+.navigation-link {
   position: relative;
-  align-items: center;
+  overflow: hidden;
 }
 
-.input-icon-container input {
-  padding-left: 40px;
-  padding-right: 300px;
+.navigation-link::after {
+  content: "";
+  display: block;
+  height: 4px;
+  width: 100%;
+  background-color: #66d9e8;
+  transform: scale(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
 }
 
-.input-icon-container i {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-} */
+.navigation-link:hover::after {
+  transform: scale(1);
+}
+
+.data-text {
+  padding-top: 122px !important;
+}
 
 .input-icon-container input.is-invalid {
   border-color: #dc3545;

@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Log in</title>
   <script src="https://kit.fontawesome.com/fc20eca1ac.js" crossorigin="anonymous"></script>
+  <link rel="icon" type="image/x-icon" href="{{ url_for('static', path='/img/starlabs-logo.jpg') }}">
   <link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap.min.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', path='/css/styles.css') }}">
 </head>
@@ -22,12 +23,12 @@
                         <div class="col-lg-10 col-xl-7 mx-auto parent">
                             <h3 class="display-4 text-center"><span class="typewritter fw-bolder"></span></h3>
                             <p class="text-muted mb-4 text-center">log in to get started</p>
-                            <form action="/login" method="post">
+                            <form action="/login" method="post" class="needs-validation" novalidate>
                                 <div class="form-group mb-3 position-relative">
                                 <div class="input-icon-container">
                                   <input id="username" name="username" type="text" placeholder="Username" required autofocus="" class="px-5 form-control rounded-pill border-0 shadow-sm px-4">
                                   <span class="position-absolute top-50 translate-middle-y error" style="margin-left: 50px;"></span>
-                                  <i class="fa-solid fa-envelope position-absolute top-50 translate-middle-y" style="margin-left: 20px;"></i>
+                                  <i class="fa-solid fa-user position-absolute top-50 translate-middle-y" style="margin-left: 20px;"></i>
                                 </div>
                               </div>
                                 <div class="form-group mb-3 position-relative">
@@ -42,13 +43,17 @@
                                     <label for="customCheck1" class="custom-control-label">Remember Me</label>
                                 </div>
                                 <div class="create-acc-link ms-2">
-                                  <p class="acc-p">Don't have an account? create one <a href="/register" class="link">Sign up</a></p>
+                                  <p class="acc-p">Don't have an account? create one <a href="/register" class="link">Register</a></p>
                                 </div>
                                 <button type="submit" class="btn btn-outline-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm" type="submit">Log in</button>
                                 <div class="text-center d-flex justify-content-between mt-4">
                             </form>
                             {% if invalid %}
                               <p style="color: #eb4823;">Invalid username or password. Please try again</p>
+                            {% endif %}
+
+                            {% if login_redirect %}
+                              <p style="color: #eb4823;">Login for more information</p>
                             {% endif %}
                         </div>
                     </div>
@@ -60,5 +65,5 @@
   <script src="https://unpkg.com/typewriter-effect/dist/core.js"></script>
   <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
   <script src="{{ url_for('static', path='/js/script.js') }}"></script>
-  <script src="{{ url_for('static', path='js/login.js') }}"></script>
+  <script src="{{ url_for('static', path='/js/login.js') }}"></script>
 </html>

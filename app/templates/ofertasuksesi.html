@@ -179,11 +179,7 @@
 
     <div class="pagination">
       {% if current_page > 1 %}
-      <a
-        href="/search?page={{ current_page - 1 }}&query={{ query }}"
-        class="prev"
-        >Previous</a
-      >
+      <a href="/search?page={{ current_page - 1 }}&query={{ query }}" class="prev">Previous</a>
       {% if current_page == 4 %}
       <a href="/search?page=1&query={{ query }}">1</a>
       {% endif %}
@@ -192,47 +188,34 @@
       <span class="pagination-dots">...</span>
       {% if current_page > 5 %}
       {% endif %} {% endif %} {% if current_page > 2 %}
-      <a
-        href="/search?page={{ current_page - 2 }}&query={{ query }}"
-        class="number"
-        >{{ current_page - 2 }}</a
-      >
+      <a href="/search?page={{ current_page - 2 }}&query={{ query }}" class="number">{{ current_page - 2 }}</a>
       {% endif %}
-      <a
-        href="/search?page={{ current_page - 1 }}&query={{ query }}"
-        class="number"
-        >{{ current_page - 1 }}</a
-      >
+      <a href="/search?page={{ current_page - 1 }}&query={{ query }}" class="number">{{ current_page - 1 }}</a>
       {% endif %}
 
       <span class="number current">{{ current_page }}</span>
 
       {% if current_page < total_pages %}
-      <a
-        href="/search?page={{ current_page + 1 }}&query={{ query }}"
-        class="number"
-        >{{ current_page + 1 }}</a
-      >
+      <a href="/search?page={{ current_page + 1 }}&query={{ query }}" class="number">{{ current_page + 1 }}</a>
       {% if current_page < total_pages - 1 %}
-      <a
-        href="/search?page={{ current_page + 2 }}&query={{ query }}"
-        class="number"
-        >{{ current_page + 2 }}</a
-      >
+      <a href="/search?page={{ current_page + 2 }}&query={{ query }}" class="number">{{ current_page + 2 }}</a>
       {% endif %} {% if current_page < total_pages - 3 %} {% if current_page <
       total_pages - 4 %}
       <span class="pagination-dots">...</span>
       {% endif %}
-      <a href="/search?page={{ total_pages }}&query={{ query }}" class="number"
-        >{{ total_pages }}</a
-      >
+      <a href="/search?page={{ total_pages }}&query={{ query }}" class="number">{{ total_pages }}</a>
       {% endif %}
-      <a
-        href="/search?page={{ current_page + 1 }}&query={{ query }}"
-        class="next"
-        >Next</a
-      >
+      <a href="/search?page={{ current_page + 1 }}&query={{ query }}" class="next">Next</a>
       {% endif %}
+
+      {% if error_message %}
+        <p style="color: red; font-size: 32px;">Data not found!</p>
+      {% endif %}
+
+      {% if location_error_message %}
+        <p style="color: red; font-size: 32px;">Location not found!</p>
+      {% endif %}
+
     </div>
   </body>
 </html>
