@@ -227,12 +227,15 @@
               <td>{{ user.last_name }}</td>
               <td>{{ user.username }}</td>
               <td>{{ user.email }}</td>
-              <td><a href="/edit-user/{{user.id}}" class="btn btn-warning user-managment-btn">EDIT</a></td>
+              <td><a href="/users/edit-user/{{user.id}}" class="btn btn-warning user-managment-btn">EDIT</a></td>
               <td><a href="/delete/{{ user.id }}" class="btn btn-danger user-managment-btn">DELETE</a></td>
             </tr>
           {% endfor %}
         </tbody>
       </table>
+      {% if invalid_username %}
+        <p style="color: red; text-align: center; font-size: 24px; margin-top: 24px;" class="fw-bolder">No user with this username!</p>
+      {% endif %}
     </div>
   </div>
   <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>

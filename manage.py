@@ -52,10 +52,8 @@ def authenticate_user(username: str, password: str):
     return user
 
 
-# Funksioni për të kthyer emrin e përdoruesit nga tokeni
 def get_username_from_token(token: str):
     try:
-        # Vendosni çelësin sekret të tokenit që keni përdorur për të nënshkruar tokenin në kodin tuaj
         secret_key = SECRET_KEY
         decoded_token = jwt.decode(token, secret_key, algorithms=["HS256"])
         # Kthe emrin e përdoruesit nga të dhënat e tokenit
@@ -63,21 +61,20 @@ def get_username_from_token(token: str):
         return username
     except jwt.ExpiredSignatureError:
         # Tokeni ka skaduar
-        return None
+        return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
         # return templates.TemplateResponse("home.html", {"request": request})
     except jwt.InvalidTokenError:
         # Tokeni është i pavlefshëm ose i korruptuar
-        return None
+        return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
         # return templates.TemplateResponse("home.html", {"request": request})
 
 def get_username_from_request(request: Request):
     access_token = request.cookies.get("auth")
     if access_token:
-        # Kërko emrin e përdoruesit duke përdorur token-in
         username = get_username_from_token(access_token)
         return username
 
-    return None
+    return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
 
 def get_user_id_from_username(username: str):
     db = SessionLocal()
@@ -134,6 +131,27 @@ def get_current_user_data(request: Request):
                 }
     return None
 
+def get_current_user_role(request: Request):
+    access_token = request.cookies.get("auth")
+    if access_token:
+        username = get_username_from_token(access_token)
+        if username:
+            db = SessionLocal()
+            user = db.query(Register).filter(Register.username == username).first()
+            if user:
+                return {
+                    "role": user.role
+                }
+    return None
+    
+
+def has_admin_role(request: Request):
+    user_role = get_current_user_role(request)
+    if user_role and user_role.get("role") == "admin":
+        return True
+    return False
+
+
 @app.get("/login", response_class=HTMLResponse)
 def show_login_form(request: Request):
     print(request.cookies)
@@ -143,7 +161,7 @@ def show_login_form(request: Request):
         response.delete_cookie("login_redirect")
         return response
     
-    elif request.cookies.get("auth") != "None":
+    elif request.cookies.get("auth") != "None" and request.cookies.get("auth"):
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     
     return templates.TemplateResponse("login.html", {"request": request}, status_code=status.HTTP_200_OK)
@@ -165,7 +183,8 @@ def login(request: Request, form_data: OAuth2PasswordRequestForm = Depends()):
 
 @app.get("/register", response_class=HTMLResponse)
 def register_html(request: Request):
-    if request.cookies.get("auth") != "None":
+    print(request.cookies)
+    if request.cookies.get("auth") != "None" and request.cookies.get("auth"):
         print(15)
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse("register.html", {"request": request})
@@ -216,14 +235,21 @@ def data(request: Request, user: Register = Depends(manager)):
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
     username = get_username_from_request(request)
-    return templates.TemplateResponse("home.html", {"request": request, "username": username})
+    user_role = get_current_user_role(request)
+    return templates.TemplateResponse("home.html", {"request": request, "username": username, 
+                                "user_role": user_role})
 
 @app.get("/users", response_class=HTMLResponse)
 def read_users(request: Request, user: Register =  Depends(manager)):
     username = get_username_from_request(request)
     db = SessionLocal()
     users = db.query(Register).all()
-    return templates.TemplateResponse("users.html", {"request": request, "users": users, "username": username, "user": user})
+    user_role = get_current_user_role(request)
+    if has_admin_role(request):
+        return templates.TemplateResponse("users.html", {"request": request, "users": users, 
+                                    "username": username, "user": user, "user_role": user_role})
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
 @app.post("/search", response_class=RedirectResponse)
 def search_user(search_username: str = Form(...), user: Register = Depends(manager)):
@@ -234,15 +260,23 @@ def search_user_by_username(request: Request, search_username: str = Path(...), 
     db = SessionLocal()
     username = get_username_from_request(request)
     user_name = db.query(Register).filter(Register.username == search_username).all()
-    if not user_name:
-        return templates.TemplateResponse("search.html", {"request": request, "user_name": user_name, "username": username, "user": user}, 
-                                          status_code=status.HTTP_404_NOT_FOUND)
-    return templates.TemplateResponse("search.html", {"request": request, "user_name": user_name, "username": username, "user": user})
+    user_role = get_current_user_role(request)
+    if has_admin_role(request):
+        if not user_name:
+            return templates.TemplateResponse("search.html", {"request": request, "user_name": user_name, "username": username, "user": user,
+                                            "invalid_username": True, "user_role": user_role},
+                                            status_code=status.HTTP_404_NOT_FOUND)
+        return templates.TemplateResponse("search.html", {"request": request, "user_name": 
+                                        user_name, "username": username, "user": user, "user_role": user_role})
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
 @app.get("/profile", response_class=HTMLResponse)
 def user_profile(request: Request, user: Register = Depends(manager), user_data: dict = Depends(get_current_user_data)):
     username = get_username_from_request(request)
-    return templates.TemplateResponse("profile.html", {"request": request, "username": username, "user": user, "user_data": user_data})
+    user_role = get_current_user_role(request)
+    return templates.TemplateResponse("profile.html", {"request": request, "username": username, 
+                                    "user": user, "user_data": user_data, "user_role": user_role})
 
 @app.post("/profile", response_class=HTMLResponse)
 async def update_user_profile(request: Request, user: Register = Depends(manager)):
@@ -257,6 +291,7 @@ async def update_user_profile(request: Request, user: Register = Depends(manager
     # Bejme update te dhenat ne databaze
     db = SessionLocal()
     user = db.query(Register).filter(Register.id == id).first()
+    user_role = get_current_user_role(request)
     if user:
         user.first_name = first_name
         user.last_name = last_name
@@ -264,16 +299,20 @@ async def update_user_profile(request: Request, user: Register = Depends(manager
         user.email = email
         db.commit()
         db.refresh(user)
-        return templates.TemplateResponse("profile.html", {"request": request, "username": username, "user": user, "user_data": form_data, "success_message": True})
+        return templates.TemplateResponse("profile.html", {"request": request, "username": username, 
+                    "user": user, "user_data": form_data, "success_message": True, "user_role": user_role})
     else:
-        return templates.TemplateResponse("profile.html", {"request": request, "username": username, "user": user, "user_data": form_data, "error_message": True})
+        return templates.TemplateResponse("profile.html", {"request": request, "username": username, 
+                        "user": user, "user_data": form_data, "error_message": True, "user_role": user_role})
 
-@app.get("/change-password", response_class=HTMLResponse)
+@app.get("/profile/change-password", response_class=HTMLResponse)
 def change_password_view(request: Request, user: Register = Depends(manager)):
     username = get_username_from_request(request)
-    return templates.TemplateResponse("password.html", {"request": request, "username": username})
+    user_role = get_current_user_role(request)
+    return templates.TemplateResponse("password.html", {"request": request, 
+                                    "username": username, "user_role": user_role})
 
-@app.post("/change-password", response_class=HTMLResponse)
+@app.post("/profile/change-password", response_class=HTMLResponse)
 def change_user_password(request: Request, user: Register = Depends(manager),
                          new_password: str = Form(...),
                          confirm_password: str = Form(...),):
@@ -286,49 +325,65 @@ def change_user_password(request: Request, user: Register = Depends(manager),
         user = db.query(Register).filter(Register.id == user_id).first()
         new_hashed_Password = get_hashed_password(new_password)
         user.password = new_hashed_Password
+        user_role = get_current_user_role(request)
         db.commit()
         db.refresh(user)
-        return templates.TemplateResponse("password.html", {"request": request, "username": username, "success_message": True})
+        return templates.TemplateResponse("password.html", {"request": request, "username": username, 
+                                        "success_message": True, "user_role": user_role})
     else:
-        return templates.TemplateResponse("password.html", {"request": request, "username": username, "error_message": True})
+        return templates.TemplateResponse("password.html", {"request": request, "username": username, 
+                                        "error_message": True, "user_role": user_role})
 
-@app.get("/edit-user/{user_id}")
-def edit_user(request: Request, user_id: int):
+@app.get("/users/edit-user/{user_id}")
+def edit_user(request: Request, user_id: int, user: Register = Depends(manager)):
     db = SessionLocal()
-    user = db.query(Register).filter(Register.id == user_id).first()
+    db_user = db.query(Register).filter(Register.id == user_id).first()
     username = get_username_from_request(request)
-    return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, "user": user})
+    user_role = get_current_user_role(request)
+    if has_admin_role(request):
+        return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
+                                "db_user": db_user, "user": user, "user_role": user_role})
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
-@app.post("/edit-user/{user_id}")
-def save_edit(user_id: int, request: Request,
+@app.post("/users/edit-user/{user_id}")
+def save_edit(user_id: int, request: Request, user: Register = Depends(manager),
               first_name: str = Form(...),
               last_name: str = Form(...),
               edit_username: str = Form(...),
               email: str = Form(...)):
     db = SessionLocal()
-    user = db.query(Register).filter(Register.id == user_id).first()
+    db_user = db.query(Register).filter(Register.id == user_id).first()
     username = get_username_from_request(request)
-    if user:
-        user.first_name = first_name
-        user.last_name = last_name
-        user.username = edit_username
-        user.email = email
-        db.commit()
-        return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, "user": user, "success_message": True})
+    user_role = get_current_user_role(request)
+    if has_admin_role(request):
+        if db_user:
+            db_user.first_name = first_name
+            db_user.last_name = last_name
+            db_user.username = edit_username
+            db_user.email = email
+            db.commit()
+            return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
+                            "db_user": db_user,"user": user, "success_message": True, "user_role": user_role})
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     
-    return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, "user": user,"success_message": False})
+    return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
+                                    "user": user,"success_message": False, "user_role": user_role})
     
 
 @app.get("/delete/{user_id}")
-def delete_user(user_id: int):
+def delete_user(request: Request, user_id: int):
     db = SessionLocal()
     user = db.query(Register).filter(Register.id == user_id).first()
+    if has_admin_role(request):
+        if user:
+            db.delete(user)
+            db.commit()
 
-    if user:
-        db.delete(user)
-        db.commit()
-
-    return RedirectResponse("/users")
+        return RedirectResponse("/users")
+    else:
+        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
 
 @app.get("/logout", response_class=RedirectResponse)

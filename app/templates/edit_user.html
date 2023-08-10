@@ -18,25 +18,25 @@
       <div class="text-center">
         <h1 class="border-bottom border-primary border-5 d-inline-block">Edit User</h1>
       </div>
-        <form method="post" action="/edit-user/{{ user.id }}" onsubmit="return validateForm()">
+        <form method="post" action="/users/edit-user/{{ db_user.id }}" onsubmit="return validateForm()">
           <div class="form-group mb-3">
                 <label for="first_name">First Name:</label>
-                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}" required>
+                <input type="text" class="form-control" id="first_name" name="first_name" value="{{ db_user.first_name }}" required>
             </div>
 
             <div class="form-group mb-3">
                 <label for="last_name">Last Name:</label>
-                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}" required>
+                <input type="text" class="form-control" id="last_name" name="last_name" value="{{ db_user.last_name }}" required>
             </div>
 
             <div class="form-group mb-3">
                 <label for="edit_username">Username:</label>
-                <input type="text" class="form-control" id="edit_username" name="edit_username" value="{{ user.username }}" required>
+                <input type="text" class="form-control" id="edit_username" name="edit_username" value="{{ db_user.username }}" required>
             </div>
 
             <div class="form-group">
                 <label for="email">Email:</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" required>
+                <input type="email" class="form-control" id="email" name="email" value="{{ db_user.email }}" required>
             </div>
 
             <button type="submit" class="btn btn-primary mt-3">Save Changes</button>

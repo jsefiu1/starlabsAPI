@@ -23,24 +23,26 @@
         </ul>
   
         <ul class="navbar-nav ms-auto my-3 my-md-0">
-          {% if request.cookies.get("auth") == "None" %}
+          {% if request.cookies.get("auth") == "None" or not request.cookies.get("auth") %}
             <li class="nav-item">
               <a href="/login" class="nav-link navigation-link">Log in</a>
             </li>
           {% endif %}
-          {% if request.cookies.get("auth") == "None" %}
+          {% if request.cookies.get("auth") == "None" or not request.cookies.get("auth") %}
             <li class="nav-item">
               <a href="/register" class="nav-link navigation-link">Register</a>
             </li>
           {% endif %}
-          {% if request.cookies.get("auth") != "None" %}
+          {% if request.cookies.get("auth") != "None" and request.cookies.get("auth") %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                 {{ username }}
               </a>
               <ul class="dropdown-menu">
                 <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                <li><a class="dropdown-item" href="/users">User managment</a></li>
+                {% if user_role.role == "admin" %}
+                  <li><a class="dropdown-item" href="/users">User managment</a></li>
+                {% endif %}
                 <li><a class="dropdown-item" href="/logout">Log out</a></li>
               </ul>
             </li>
