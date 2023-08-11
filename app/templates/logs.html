@@ -1,0 +1,50 @@
+{% include "nav.html" %}
+
+<style>
+    .users-container {
+    min-height: 120vh;
+  }
+
+  a.user-managment-btn {
+    min-width: 100%;
+  }
+        
+  .form-control {
+    min-width: 300px;
+  }
+</style>
+<div class="container users-container d-flex flex-column justify-content-center align-self-center mb-5 center-container">
+  <div class="table-responsive mt-2">
+    <table class="table table-bordered">
+      <thead class="bg-secondary text-light">
+      <tr>
+        <th>Admin Username</th>
+        <th>User Affected</th>
+        <th>Action</th>
+        <th>Timestamp</th>
+        <th>Details</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr class="fw-bolder">
+        <td>{{ log.admin_username }}</td>
+        <td>{{ log.edited_user_username }}</td>
+        <td>
+          {% if "Deleted" in log.details %}
+            <span class="btn btn-danger user-managment-btn"">Delete</span>
+          {% else %}
+            <span class="btn btn-warning user-managment-btn"">Edit</span>
+          {% endif %}
+        </td>
+        <td>{{ log.timestamp }}</td>
+        <td>{{ log.details }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

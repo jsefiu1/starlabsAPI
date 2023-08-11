@@ -19,7 +19,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from fastapi_login import LoginManager
-from app.models.auth import Register
+from app.models.auth import Register, EditLog
 from datetime import timedelta
 import jwt
 
@@ -363,6 +363,15 @@ def save_edit(user_id: int, request: Request, user: Register = Depends(manager),
             db_user.username = edit_username
             db_user.email = email
             db.commit()
+            admin_username = get_username_from_request(request) 
+            edit_log = EditLog(
+                admin_username=admin_username,
+                edited_user_username=db_user.username,
+                details=f"Updated user info: first_name={first_name}, last_name={last_name}, username={edit_username}, email={email}"
+            )
+
+            db.add(edit_log)
+            db.commit()
             return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
                             "db_user": db_user,"user": user, "success_message": True, "user_role": user_role})
     else:
@@ -376,8 +385,17 @@ def save_edit(user_id: int, request: Request, user: Register = Depends(manager),
 def delete_user(request: Request, user_id: int):
     db = SessionLocal()
     user = db.query(Register).filter(Register.id == user_id).first()
+    admin_username = get_username_from_request(request)  # Get the admin's username
     if has_admin_role(request):
         if user:
+            log_details = f"Deleted user account: username={user.username}"
+            edit_log = EditLog(
+                admin_username=admin_username,
+                edited_user_username=user.username, 
+                details=log_details
+            )
+            db.add(edit_log)
+            
             db.delete(user)
             db.commit()
 
@@ -385,6 +403,19 @@ def delete_user(request: Request, user_id: int):
     else:
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
+
+@app.get("/logs", response_class=HTMLResponse)
+def display_logs(request: Request, user: Register = Depends(manager)):
+    user_role = get_current_user_role(request)
+    username = get_username_from_request(request)
+
+    if not has_admin_role(request):
+        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+
+    db = SessionLocal()
+    logs = db.query(EditLog).all()
+
+    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "user_role": user_role, "username": username})
 
 @app.get("/logout", response_class=RedirectResponse)
 def logout():
