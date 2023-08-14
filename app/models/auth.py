@@ -20,5 +20,5 @@ class EditLog(Base):
     id = Column(Integer, primary_key=True, index=True)
     admin_username = Column(String, index=True)
     edited_user_username = Column(String, index=True)
-    timestamp = Column(DateTime, default=datetime.utcnow)  # Use datetime.utcnow() here
+    timestamp = Column(DateTime, default=datetime.utcnow) 
     details = Column(String)

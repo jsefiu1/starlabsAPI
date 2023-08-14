@@ -22,6 +22,7 @@ from fastapi_login import LoginManager
 from app.models.auth import Register, EditLog
 from datetime import timedelta
 import jwt
+import math
 
 app = FastAPI(title="StarLabs API")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -239,6 +240,7 @@ def home(request: Request):
     return templates.TemplateResponse("home.html", {"request": request, "username": username, 
                                 "user_role": user_role})
 
+#########################USERS#####################################################
 @app.get("/users", response_class=HTMLResponse)
 def read_users(request: Request, user: Register =  Depends(manager)):
     username = get_username_from_request(request)
@@ -270,7 +272,7 @@ def search_user_by_username(request: Request, search_username: str = Path(...), 
                                         user_name, "username": username, "user": user, "user_role": user_role})
     else:
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
-
+#################################################################################################################
 @app.get("/profile", response_class=HTMLResponse)
 def user_profile(request: Request, user: Register = Depends(manager), user_data: dict = Depends(get_current_user_data)):
     username = get_username_from_request(request)
@@ -334,6 +336,7 @@ def change_user_password(request: Request, user: Register = Depends(manager),
         return templates.TemplateResponse("password.html", {"request": request, "username": username, 
                                         "error_message": True, "user_role": user_role})
 
+###############################USERS###################################################
 @app.get("/users/edit-user/{user_id}")
 def edit_user(request: Request, user_id: int, user: Register = Depends(manager)):
     db = SessionLocal()
@@ -403,9 +406,28 @@ def delete_user(request: Request, user_id: int):
     else:
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
-
+#######################LOGS##########################################################
 @app.get("/logs", response_class=HTMLResponse)
-def display_logs(request: Request, user: Register = Depends(manager)):
+def display_logs(request: Request, page: int = Query(1, alias="page"), user: Register = Depends(manager)):
+    user_role = get_current_user_role(request)
+    username = get_username_from_request(request)
+    
+    if not has_admin_role(request):
+        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+    
+    db = SessionLocal()
+    items_per_page = 5  # Adjust the number of items per page as needed
+    
+    logs_query = db.query(EditLog)
+    total_logs = logs_query.count()
+    logs = logs_query.offset((page - 1) * items_per_page).limit(items_per_page).all()
+    
+    total_pages = math.ceil(total_logs / items_per_page)
+    
+    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "user_role": user_role, "username": username, "page": page, "total_pages": total_pages})
+
+@app.get("/search/user_affected", response_class=HTMLResponse)
+def search_logs_by_user_affected(request: Request, user_affected: str = Query(...), user: Register = Depends(manager)):
     user_role = get_current_user_role(request)
     username = get_username_from_request(request)
 
@@ -413,10 +435,16 @@ def display_logs(request: Request, user: Register = Depends(manager)):
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
     db = SessionLocal()
-    logs = db.query(EditLog).all()
+    logs = db.query(EditLog).filter(EditLog.edited_user_username == user_affected).all()
 
-    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "user_role": user_role, "username": username})
+    # You should set `total_pages` and `page` according to the search results.
+    total_pages = 1  # Assuming only one page for search results
+    page = 1         # Assuming the first page for search results
+    
+    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "user_role": user_role, "username": username, "page": page, "total_pages": total_pages})
 
+
+##################################################################################################################
 @app.get("/logout", response_class=RedirectResponse)
 def logout():
     response = RedirectResponse("/login")
