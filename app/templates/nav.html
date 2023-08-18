@@ -20,7 +20,17 @@
           <li class="nav-item">
             <a href="/#services" class="nav-link navigation-link">Services</a>
           </li>
+          {% if request.cookies.get("auth") != "None" and request.cookies.get("auth") %}
+          <li class="nav-item">
+            <a href="/chat" class="nav-link navigation-link">ChatBot</a>
+          </li>
+          {% if user_role.role == "admin" %}
+          <li class="nav-item">
+            <a href="/messages" class="nav-link navigation-link">Messages</a>
+          </li>
+          {% endif %}
         </ul>
+        {% endif %}
   
         <ul class="navbar-nav ms-auto my-3 my-md-0">
           {% if request.cookies.get("auth") == "None" or not request.cookies.get("auth") %}

@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Form, Request, status, Query, Path
+from fastapi import FastAPI, Depends, Form, Request, status, Query, Path, WebSocket
 from fastapi.templating import Jinja2Templates
 import uvicorn
 from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, users
@@ -23,6 +23,13 @@ from app.models.auth import Register, EditLog
 from datetime import timedelta
 import jwt
 import math
+import httpx
+import openai
+import logging
+import time
+from httpx import TimeoutException 
+import json
+
 
 app = FastAPI(title="StarLabs API")
 app.mount("/static", StaticFiles(directory="app/static"), name="static")
@@ -62,12 +69,14 @@ def get_username_from_token(token: str):
         return username
     except jwt.ExpiredSignatureError:
         # Tokeni ka skaduar
-        return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
+        # return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
         # return templates.TemplateResponse("home.html", {"request": request})
+        return None
     except jwt.InvalidTokenError:
         # Tokeni është i pavlefshëm ose i korruptuar
-        return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
+        # return RedirectResponse("/login", status_code=status.HTTP_302_FOUND)
         # return templates.TemplateResponse("home.html", {"request": request})
+        return None
 
 def get_username_from_request(request: Request):
     access_token = request.cookies.get("auth")
@@ -416,7 +425,7 @@ def display_logs(request: Request, page: int = Query(1, alias="page"), user: Reg
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     
     db = SessionLocal()
-    items_per_page = 5  # Adjust the number of items per page as needed
+    items_per_page = 5 
     
     logs_query = db.query(EditLog)
     total_logs = logs_query.count()
@@ -437,14 +446,71 @@ def search_logs_by_user_affected(request: Request, user_affected: str = Query(..
     db = SessionLocal()
     logs = db.query(EditLog).filter(EditLog.edited_user_username == user_affected).all()
 
-    # You should set `total_pages` and `page` according to the search results.
-    total_pages = 1  # Assuming only one page for search results
-    page = 1         # Assuming the first page for search results
+    total_pages = 1 
+    page = 1     
     
     return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "user_role": user_role, "username": username, "page": page, "total_pages": total_pages})
 
+#######################OPEN AI ###############################################################
 
-##################################################################################################################
+openai_api_key = "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"
+messages = [{"role": "system", "content": "You are a programmer or Developer"}]
+
+@app.get("/chat", response_class=HTMLResponse)
+async def chat(request: Request):
+    username = get_username_from_request(request)
+    user_role = get_current_user_role(request)
+    return templates.TemplateResponse("chat.html", {"request": request, "username": username, "user_role": user_role})
+
+@app.post("/chat")
+async def custom_chat(user_input: str = Form(...)):
+    messages.append({"role": "user", "content": user_input})
+
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers={"Content-Type": "application/json"},
+                json={
+                    "model": "gpt-3.5-turbo",
+                    "messages": messages,
+                },
+                auth=("", openai_api_key),
+                timeout=httpx.Timeout(30),
+            )
+            response_data = response.json()
+
+        chatgpt_reply = response_data["choices"][0]["message"]["content"]
+        messages.append({"role": "assistant", "content": chatgpt_reply})
+
+        return {"response": chatgpt_reply}
+
+    except (httpx.RequestError, TimeoutException, json.JSONDecodeError) as e:
+        error_message = "An error occurred while processing the request: " + str(e)
+        return {"error": error_message}
+########################################WEB SOCKET#############################################
+# clients = []
+
+# @app.get("/messages", response_class=HTMLResponse)
+# async def websocket_chat(request: Request):
+#     username = get_username_from_request(request)
+#     user_role = get_current_user_role(request)
+#     return templates.TemplateResponse("messages.html", {"request": request, "username": username, "user_role": user_role})
+
+# @app.websocket("/messages")
+# async def websocket_endpoint(websocket: WebSocket):
+#     await websocket.accept()
+#     clients.append(websocket)
+#     try:
+#         while True:
+#             data = await websocket.receive_text()
+#             for client in clients:
+#                 await client.send_text(data)
+#     except WebSocketDisconnect:
+#         clients.remove(websocket)
+#################################################################################################################
+
+
 @app.get("/logout", response_class=RedirectResponse)
 def logout():
     response = RedirectResponse("/login")

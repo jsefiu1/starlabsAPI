@@ -13,6 +13,7 @@ class Register(Base):
     email = Column(String)
     password = Column(String)
     role = Column(String, default="user")
+    
 
 class EditLog(Base):
     __tablename__ = 'edit_logs'
