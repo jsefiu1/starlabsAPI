@@ -1,19 +1,33 @@
-const socket = new WebSocket("ws://localhost:8000/messages");
+const chatMessages = document.getElementById("chat-messages");
+const messageInput = document.getElementById("message-input");
+const sendButton = document.getElementById("send-button");
 
-socket.onmessage = (event) => {
-    const messagesDiv = document.getElementById("chat-messages");
-    const message = JSON.parse(event.data);
+const wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+const wsURL = `${wsProtocol}${window.location.host}/messages?username=${username}`;
 
-    const messageDiv = document.createElement("div");
-    messageDiv.innerText = `[${message.timestamp}] ${message.username}: ${message.content}`;
-    messagesDiv.appendChild(messageDiv);
+const socket = new WebSocket(wsURL);
+
+socket.onopen = (event) => {
+    console.log("WebSocket connection opened.");
 };
 
-document.getElementById("send-button").addEventListener("click", () => {
-    const input = document.getElementById("message-input");
-    const message = input.value.trim();
-    if (message !== "") {
-        socket.send(JSON.stringify({ content: message }));
-        input.value = "";
+socket.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    displayMessage(message);
+};
+
+sendButton.addEventListener("click", () => {
+    const message = messageInput.value;
+    if (message.trim() !== "") {
+        socket.send(message);
+        messageInput.value = "";
     }
 });
+
+function displayMessage(message) {
+    const messageElement = document.createElement("li");
+    messageElement.innerHTML = `
+        <p>${message.timestamp} - <strong>${message.username}:</strong> ${message.message}</p>
+    `;
+    chatMessages.appendChild(messageElement);
+}

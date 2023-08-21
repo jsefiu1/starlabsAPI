@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, Form, Request, status, Query, Path, WebSocket
+from fastapi import FastAPI, Depends, Form, Request, status, Query, Path, WebSocket, HTTPException
 from fastapi.templating import Jinja2Templates
 import uvicorn
 from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, users
@@ -19,8 +19,14 @@ from fastapi.templating import Jinja2Templates
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from fastapi_login import LoginManager
-from app.models.auth import Register, EditLog
+from app.models.auth import Register, EditLog, ChatMessage
 from datetime import timedelta
+from typing import List
+from datetime import datetime
+from sqlalchemy.orm import Session
+from app.utils.database import get_db
+from app.routers.schemas import ChatMessageSchema, CreateMessageInput
+from fastapi.websockets import WebSocketDisconnect 
 import jwt
 import math
 import httpx
@@ -488,26 +494,97 @@ async def custom_chat(user_input: str = Form(...)):
     except (httpx.RequestError, TimeoutException, json.JSONDecodeError) as e:
         error_message = "An error occurred while processing the request: " + str(e)
         return {"error": error_message}
+    
+    
+    
 ########################################WEB SOCKET#############################################
-# clients = []
 
-# @app.get("/messages", response_class=HTMLResponse)
-# async def websocket_chat(request: Request):
-#     username = get_username_from_request(request)
-#     user_role = get_current_user_role(request)
-#     return templates.TemplateResponse("messages.html", {"request": request, "username": username, "user_role": user_role})
+clients = []
 
-# @app.websocket("/messages")
-# async def websocket_endpoint(websocket: WebSocket):
-#     await websocket.accept()
-#     clients.append(websocket)
-#     try:
-#         while True:
-#             data = await websocket.receive_text()
-#             for client in clients:
-#                 await client.send_text(data)
-#     except WebSocketDisconnect:
-#         clients.remove(websocket)
+@app.websocket("/messages")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+
+    query_params = websocket.query_params
+    username = query_params.get("username")
+
+    print(f"WebSocket connection opened for user: {username}")
+
+    # Add the connected user to the clients list
+    clients.append((username, websocket))
+
+    try:
+        while True:
+            data = await websocket.receive_text()
+            print(f"Received message from user {username}: {data}")
+
+            db = SessionLocal()
+            try:
+                new_message = create_message(db, username, data)
+                print(f"Created new message in database: {new_message.message}")
+            finally:
+                db.close()
+
+            message = {
+                "username": username,
+                "message": new_message.message,
+                "timestamp": new_message.timestamp
+            }
+
+            # Convert the message dictionary to a JSON string
+            message_json = json.dumps(message)
+
+            for client_username, client_websocket in clients:
+                await client_websocket.send_text(message_json)
+                print(f"Sent message to client {client_username}")
+    except WebSocketDisconnect:
+        for client_tuple in clients:
+            if client_tuple[0] == username:
+                clients.remove(client_tuple)
+                print(f"WebSocket connection closed for user: {username}")
+                break
+
+
+
+@app.get("/messages", response_class=HTMLResponse)
+async def message(request: Request):
+    username = get_username_from_request(request)
+    user_role = get_current_user_role(request)
+    return templates.TemplateResponse("messages.html", {"request": request, "username": username, "user_role": user_role})
+
+
+def create_message(db: Session, username: str, message: str):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    user = db.query(Register).filter_by(username=username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail=f"User with username '{username}' not found.")
+    new_message = ChatMessage(message=message, timestamp=timestamp, user=user)
+    db.add(new_message)
+    db.commit()
+    db.refresh(new_message)
+    return new_message
+
+            
+@app.get("/api/messages", response_model=List[ChatMessageSchema])
+async def get_messages(username: str = Depends(get_username_from_request), db: Session = Depends(get_db)):
+    try:
+        messages = db.query(ChatMessage).order_by(ChatMessage.timestamp).all()
+        return messages
+    except Exception as e:
+        print(f"Error retrieving messages: {e}")
+        raise HTTPException(status_code=500, detail="An error occurred while retrieving messages")
+
+@app.post("/api/messages", response_model=ChatMessageSchema)
+async def create_message_route(input_data: CreateMessageInput, username: str = Depends(get_username_from_request), db: Session = Depends(get_db)):
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    user = db.query(Register).filter_by(username=username).first()
+    if not user:
+        raise HTTPException(status_code=404, detail=f"User with username '{username}' not found.")
+    new_message = ChatMessage(message=input_data.message, timestamp=timestamp, user=user)
+    db.add(new_message)
+    db.commit()
+    db.refresh(new_message)
+    return new_message
 #################################################################################################################
 
 

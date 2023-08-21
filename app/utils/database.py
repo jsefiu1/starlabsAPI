@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 from sqlalchemy.orm import sessionmaker
 from fastapi_amis_admin.admin.settings import Settings
+from sqlalchemy.orm import Session
 
 load_dotenv()
 
@@ -24,3 +25,10 @@ engine = create_engine(DATABASE_URL)
 
 session = sessionmaker(bind=engine)()
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+def get_db():
+    db = SessionLocal()  
+    try:
+        yield db
+    finally:
+        db.close()

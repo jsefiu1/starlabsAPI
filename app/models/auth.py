@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, DateTime, Float
+from sqlalchemy import Column, Integer, String, DateTime, Float, ForeignKey
+from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.utils.database import engine
 from app.models import Base
@@ -9,11 +10,12 @@ class Register(Base):
     id = Column(Integer, primary_key=True)
     first_name = Column(String)
     last_name = Column(String)
-    username = Column(String)
+    username = Column(String, unique=True) 
     email = Column(String)
     password = Column(String)
     role = Column(String, default="user")
-    
+    messages = relationship("ChatMessage", back_populates="user")
+
 
 class EditLog(Base):
     __tablename__ = 'edit_logs'
@@ -23,3 +25,12 @@ class EditLog(Base):
     edited_user_username = Column(String, index=True)
     timestamp = Column(DateTime, default=datetime.utcnow) 
     details = Column(String)
+    
+class ChatMessage(Base):
+    __tablename__ = "chat_messages"
+    
+    id = Column(Integer, primary_key=True)
+    message = Column(String)
+    timestamp = Column(String)
+    username = Column(String, ForeignKey("register.username")) 
+    user = relationship("Register", back_populates="messages")
