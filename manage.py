@@ -463,7 +463,7 @@ openai_api_key = "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"
 messages = [{"role": "system", "content": "You are a programmer or Developer"}]
 
 @app.get("/chat", response_class=HTMLResponse)
-async def chat(request: Request):
+async def chat(request: Request, user: Register = Depends(manager)):
     username = get_username_from_request(request)
     user_role = get_current_user_role(request)
     return templates.TemplateResponse("chat.html", {"request": request, "username": username, "user_role": user_role})
@@ -503,6 +503,7 @@ clients = []
 
 @app.websocket("/messages")
 async def websocket_endpoint(websocket: WebSocket):
+    
     await websocket.accept()
 
     query_params = websocket.query_params
@@ -510,7 +511,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
     print(f"WebSocket connection opened for user: {username}")
 
-    # Add the connected user to the clients list
     clients.append((username, websocket))
 
     try:
@@ -531,7 +531,6 @@ async def websocket_endpoint(websocket: WebSocket):
                 "timestamp": new_message.timestamp
             }
 
-            # Convert the message dictionary to a JSON string
             message_json = json.dumps(message)
 
             for client_username, client_websocket in clients:
@@ -547,9 +546,11 @@ async def websocket_endpoint(websocket: WebSocket):
 
 
 @app.get("/messages", response_class=HTMLResponse)
-async def message(request: Request):
+async def message(request: Request,  user: Register = Depends(manager)):
     username = get_username_from_request(request)
-    user_role = get_current_user_role(request)
+    user_role = get_current_user_role(request)    
+    if not has_admin_role(request):
+        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     return templates.TemplateResponse("messages.html", {"request": request, "username": username, "user_role": user_role})
 
 
@@ -574,17 +575,17 @@ async def get_messages(username: str = Depends(get_username_from_request), db: S
         print(f"Error retrieving messages: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while retrieving messages")
 
-@app.post("/api/messages", response_model=ChatMessageSchema)
-async def create_message_route(input_data: CreateMessageInput, username: str = Depends(get_username_from_request), db: Session = Depends(get_db)):
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    user = db.query(Register).filter_by(username=username).first()
-    if not user:
-        raise HTTPException(status_code=404, detail=f"User with username '{username}' not found.")
-    new_message = ChatMessage(message=input_data.message, timestamp=timestamp, user=user)
-    db.add(new_message)
-    db.commit()
-    db.refresh(new_message)
-    return new_message
+# @app.post("/api/messages", response_model=ChatMessageSchema)
+# async def create_message_route(input_data: CreateMessageInput, username: str = Depends(get_username_from_request), db: Session = Depends(get_db)):
+#     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+#     user = db.query(Register).filter_by(username=username).first()
+#     if not user:
+#         raise HTTPException(status_code=404, detail=f"User with username '{username}' not found.")
+#     new_message = ChatMessage(message=input_data.message, timestamp=timestamp, user=user)
+#     db.add(new_message)
+#     db.commit()
+#     db.refresh(new_message)
+#     return new_message
 #################################################################################################################
 
 
