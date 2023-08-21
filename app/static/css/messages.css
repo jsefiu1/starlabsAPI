@@ -3,18 +3,18 @@
   margin: 0 auto;
   padding: 20px;
   display: flex;
-  flex-direction: column; /* Arrange items vertically */
-  justify-content: space-between; /* Space between top and bottom */
-  height: 100vh; /* Use full viewport height */
+  flex-direction: column; 
+  justify-content: space-between;
+  height: 100vh; 
   box-sizing: border-box;
 }
 
-/* Chat messages */
 #chat-messages {
+  margin-top: 60px; 
   border: 1px solid #ddd;
   background-color: #f9f9f9;
   padding: 10px;
-  flex-grow: 1; /* Expand to fill remaining space */
+  flex-grow: 1; 
   overflow-y: auto;
 }
 
@@ -42,15 +42,14 @@ li {
   color: #333;
 }
 
-/* Input container */
 .input-container {
   display: flex;
-  align-items: center; /* Center items vertically */
+  align-items: center; 
   margin-top: 10px;
 }
 
 #message-input {
-  flex-grow: 1; /* Expand to fill available space */
+  flex-grow: 1; 
   padding: 8px;
   border: 1px solid #ddd;
   border-radius: 5px;

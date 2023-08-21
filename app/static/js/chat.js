@@ -16,14 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
       
-        // Disable input and send button
         userInput.disabled = true;
         sendButton.disabled = true;
       
         const userMessageElement = createMessageElement('user', userMessage);
         chatMessages.appendChild(userMessageElement);
       
-        // Add "waiting for response" message
         const waitingMessage = createMessageElement('assistant', 'Waiting for response...');
         chatMessages.appendChild(waitingMessage);
       
