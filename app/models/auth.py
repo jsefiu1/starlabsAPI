@@ -15,7 +15,7 @@ class Register(Base):
     password = Column(String)
     role = Column(String, default="user")
     messages = relationship("ChatMessage", back_populates="user")
-
+    api_keys = relationship("APIKey", back_populates="user")  
 
 class EditLog(Base):
     __tablename__ = 'edit_logs'
@@ -34,3 +34,12 @@ class ChatMessage(Base):
     timestamp = Column(String)
     username = Column(String, ForeignKey("register.username")) 
     user = relationship("Register", back_populates="messages")
+    
+class APIKey(Base):
+    __tablename__ = "api_keys"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, ForeignKey('register.username'))
+    key = Column(String, unique=True, index=True)
+    user = relationship("Register", back_populates="api_keys")
+

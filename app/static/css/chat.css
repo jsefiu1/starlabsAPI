@@ -18,14 +18,17 @@ body {
   background-color: white;
   display: flex;
   flex-direction: column;
+  position: relative;
+  height: 100vh; 
 }
 
 .chat-messages {
   flex: 1;
-  overflow-y: auto; 
-  margin-top: 10px; 
+  overflow-y: auto;
+  height: calc(100vh - 120px);
+  margin-top: 10px;
+  max-height: 60vh; /
 }
-
 .message {
   padding: 10px;
   border-radius: 5px;

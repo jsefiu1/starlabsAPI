@@ -1,0 +1,38 @@
+{% include 'base.html' %}
+{% include 'nav.html' %}
+<link rel="stylesheet" href="static/css/generate_api_key.css">
+
+<body>
+    <div>
+        <h1>Generate API Key</h1>
+        <p>Click the button below to generate an API key.</p>
+        
+        <button id="generate-button">Generate API Key</button>
+        
+        <h2>Your Generated API Key:</h2>
+        <p id="api-key">{{ api_key }}</p>
+    </div>
+
+<script>
+    const generateButton = document.getElementById('generate-button');
+
+    const apiKeyElement = document.getElementById('api-key');
+
+    generateButton.addEventListener('click', async () => {
+
+        const response = await fetch('/generate-api-key', {
+            method: 'POST'
+        });
+        
+        if (response.ok) {
+
+            const data = await response.json();
+            apiKeyElement.textContent = data.key;
+        } else {
+            apiKeyElement.textContent = 'Error generating API key.';
+        }
+    });
+</script>
+<script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

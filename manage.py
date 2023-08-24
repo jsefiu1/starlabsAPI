@@ -19,12 +19,13 @@ from fastapi.templating import Jinja2Templates
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from fastapi_login import LoginManager
-from app.models.auth import Register, EditLog, ChatMessage
+from app.models.auth import Register, EditLog, ChatMessage, APIKey
 from datetime import timedelta
 from typing import List
 from datetime import datetime
 from sqlalchemy.orm import Session
 from app.utils.database import get_db
+from app.routers.api_key import generate_api_key
 from app.routers.schemas import ChatMessageSchema, CreateMessageInput
 from fastapi.websockets import WebSocketDisconnect 
 import jwt
@@ -233,20 +234,28 @@ def register(
 
 
 @app.get("/data", response_class=HTMLResponse)
-def data(request: Request, user: Register = Depends(manager)):
-    navigation_items = [
-        {"name": "Dashboard", "url": "/data"},
-        {"name": "Telegrafi", "url": "/telegrafi/view"},
-        {"name": "Gjirafa", "url": "/gjirafa/view"},
-        {"name": "ofertasuksesi", "url": "/ofertasuksesi/html"},
-        {"name": "Douglas", "url": "/douglas/view"},
-        {"name": "Kosovajobs", "url": "/kosovajobs/view"},
-        {"name": "Express", "url": "/gazetaexpress/view"}
-        # Add more navigation items as needed
-    ]
-    return templates.TemplateResponse(
-        "data.html", {"request": request, "navigation_items": navigation_items, "user": user}
-    )
+def data(request: Request, db: Session = Depends(get_db), user: Register = Depends(manager)):
+    username = get_username_from_request(request)
+    api_key_entry = db.query(APIKey).filter(APIKey.username == username).first()
+
+    if api_key_entry:
+        api_key = api_key_entry.key
+        navigation_items = [
+            {"name": "Dashboard", "url": "/data"},
+            {"name": "Telegrafi", "url": "/telegrafi/view"},
+            {"name": "Gjirafa", "url": "/gjirafa/view"},
+            {"name": "ofertasuksesi", "url": "/ofertasuksesi/html"},
+            {"name": "Douglas", "url": "/douglas/view"},
+            {"name": "Kosovajobs", "url": "/kosovajobs/view"},
+            {"name": "Express", "url": "/gazetaexpress/view"}
+            # Add more navigation items as needed
+        ]
+        return templates.TemplateResponse(
+            "data.html", {"request": request, "navigation_items": navigation_items, "user": user, "api_key": api_key}
+        )
+    else:
+        raise HTTPException(status_code=401, detail="Invalid API key or user not found")
+
         
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
@@ -457,7 +466,7 @@ def search_logs_by_user_affected(request: Request, user_affected: str = Query(..
     
     return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "user_role": user_role, "username": username, "page": page, "total_pages": total_pages})
 
-#######################OPEN AI ###############################################################
+####################### OPEN AI ###############################################################
 
 openai_api_key = "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"
 messages = [{"role": "system", "content": "You are a programmer or Developer"}]
@@ -575,19 +584,55 @@ async def get_messages(username: str = Depends(get_username_from_request), db: S
         print(f"Error retrieving messages: {e}")
         raise HTTPException(status_code=500, detail="An error occurred while retrieving messages")
 
-# @app.post("/api/messages", response_model=ChatMessageSchema)
-# async def create_message_route(input_data: CreateMessageInput, username: str = Depends(get_username_from_request), db: Session = Depends(get_db)):
-#     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-#     user = db.query(Register).filter_by(username=username).first()
-#     if not user:
-#         raise HTTPException(status_code=404, detail=f"User with username '{username}' not found.")
-#     new_message = ChatMessage(message=input_data.message, timestamp=timestamp, user=user)
-#     db.add(new_message)
-#     db.commit()
-#     db.refresh(new_message)
-#     return new_message
 #################################################################################################################
+########## GENERATE API KEY #############
 
+@app.get("/generate-api-key", response_class=HTMLResponse)
+async def generate_api_key_html(request: Request, user: Register = Depends(manager)):
+    db = SessionLocal()
+    username = get_username_from_request(request)
+
+    api_key_entry = db.query(APIKey).filter(APIKey.username == username).first()
+
+    if api_key_entry:
+        api_key = api_key_entry.key
+    else:
+        api_key = "API key not found"
+    
+    user_role = get_current_user_role(request)       
+    
+    template_params = {"request": request, "username": username, "user_role": user_role, "api_key": api_key}
+    
+    return templates.TemplateResponse("generate_api_key.html", template_params)
+
+
+@app.post('/generate-api-key')
+async def generate_api_key_router(request: Request):
+    username = get_username_from_request(request)
+    new_api_key = generate_api_key(request)
+
+    db = SessionLocal()
+
+    existing_api_key = db.query(APIKey).filter_by(username=username).first()
+
+    if existing_api_key:
+        existing_api_key.key = new_api_key
+    else:
+        api_key = APIKey(username=username, key=new_api_key)
+        db.add(api_key)
+
+    db.commit()
+
+    return {"key": new_api_key}
+
+
+@app.exception_handler(HTTPException)
+async def redirect_invalid_api_key(request, exc):
+    if exc.status_code == 401:
+        return RedirectResponse("/generate-api-key", status_code=302)
+    return exc
+
+###########################################################################################################
 
 @app.get("/logout", response_class=RedirectResponse)
 def logout():
