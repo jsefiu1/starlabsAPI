@@ -43,3 +43,11 @@ class APIKey(Base):
     key = Column(String, unique=True, index=True)
     user = relationship("Register", back_populates="api_keys")
 
+class Contact(Base):
+    __tablename__ = "text"
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    email = Column(String)
+    message = Column(String)
+    role = Column(String, default="user")

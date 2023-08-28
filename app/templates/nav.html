@@ -2,7 +2,7 @@
 <body data-bs-spy="scroll" data-bs-target="#navbar-scroll">
   <nav class="navbar navbar-expand-lg navbar-light bg-light shadow fixed-top" id="navbar-scroll">
     <div class="container">
-      <a href="/#home" class="navbar-brand fw-bolder">
+      <a href="#home" class="navbar-brand fw-bolder">
         <img src="{{ url_for('static', path='/img/starlabs-logo.jpg') }}" alt="" class="img-fluid" style="height: 60px;">
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar">
@@ -12,13 +12,13 @@
       <div class="collapse navbar-collapse fw-bolder" id="navbar">
         <ul class="navbar-nav ms-auto my-3 my-md-0">
           <li class="nav-item">
-            <a href="/#home" class="nav-link navigation-link">Home</a>
+            <a href="#home" class="nav-link navigation-link">Home</a>
           </li>
           <li class="nav-item">
-            <a href="/#about" class="nav-link navigation-link">About</a>
+            <a href="#about" class="nav-link navigation-link">About</a>
           </li>
           <li class="nav-item">
-            <a href="/#services" class="nav-link navigation-link">Services</a>
+            <a href="#services" class="nav-link navigation-link">Services</a>
           </li>
           {% if request.cookies.get("auth") != "None" and request.cookies.get("auth") %}
           <li class="nav-item">

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, Form, Request, status, Query, Path, WebSocket, HTTPException
 from fastapi.templating import Jinja2Templates
 import uvicorn
-from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, users
+from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, users, contact
 from app.models import Base
 from app.utils.database import engine, SessionLocal, session
 from app.tasks import (
@@ -632,6 +632,14 @@ async def redirect_invalid_api_key(request, exc):
         return RedirectResponse("/generate-api-key", status_code=302)
     return exc
 
+
+############################################# CONTACT FORM ################################################
+####
+
+
+app.include_router(contact.router)
+
+####
 ###########################################################################################################
 
 @app.get("/logout", response_class=RedirectResponse)
