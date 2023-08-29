@@ -186,7 +186,7 @@
       <button type="submit">Search</button>
     </form>
 
-    {% if jobs %}
+
     <div class="table-container">
         <table>
             <thead>
@@ -213,39 +213,34 @@
             </tbody>
         </table>
     </div>
-
     {% if total_pages > 1 %}
     <div class="pagination">
       {% if page > 1 %}
-      <a
-        href="/kosovajobs/view?page=1&jobtitle={{ jobtitle|urlencode }}&city={{ city|urlencode }}"
-        >1</a
-      >
-      {% endif %} {% if page > 4 %}
-      <span class="ellipsis">...</span>
-      {% endif %} {% for p in range(start_page, end_page + 1) %} {% if p == page
-      %}
-      <a
-        href="/kosovajobs/view?page={{ p }}&jobtitle={{ jobtitle|urlencode }}&city={{ city|urlencode }}"
-        class="active"
-        >{{ p }}</a
-      >
-      {% else %}
-      <a
-        href="/kosovajobs/view?page={{ p }}&jobtitle={{ jobtitle|urlencode }}&city={{ city|urlencode }}"
-        >{{ p }}</a
-      >
-      {% endif %} {% endfor %} {% if end_page < total_pages - 3 %}
-      <span class="ellipsis">...</span>
-      {% endif %} {% if end_page < total_pages %}
-      <a
-        href="/kosovajobs/view?page={{ total_pages }}&jobtitle={{ jobtitle|urlencode }}&city={{ city|urlencode }}"
-        >{{ total_pages }}</a
-      >
+        <a href="/kosovajobs/view?page={{ page - 1 }}&jobtitle={{ jobtitle|urlencode }}&city={{ city|urlencode }}">Previous</a>
+      {% endif %}
+      
+      <a href="/kosovajobs/view?page=1&jobtitle={{ jobtitle|urlencode }}&city={{ city|urlencode }}" class="{% if page == 1 %}active{% endif %}">1</a>
+      {% if page >3 %}
+        <span class="ellipsis">...</span>
+      {% endif %}
+      
+      {% for p in range(page-1, page+3) %}
+        {% if p > 1 and p < total_pages %}
+          <a href="/kosovajobs/view?page={{ p }}&jobtitle={{ jobtitle|urlencode }}&city={{ city|urlencode }}" class="{% if p == page %}active{% endif %}">{{ p }}</a>
+        {% endif %}
+      {% endfor %}
+      
+      {% if page < total_pages - 2 %}
+        <span class="ellipsis">...</span>
+      {% endif %}
+      
+      <a href="/kosovajobs/view?page={{ total_pages }}&jobtitle={{ jobtitle|urlencode }}&city={{ city|urlencode }}" class="{% if page == total_pages %}active{% endif %}">{{ total_pages }}</a>
+      
+      {% if page < total_pages %}
+        <a href="/kosovajobs/view?page={{ page + 1 }}&jobtitle={{ jobtitle|urlencode }}&city={{ city|urlencode }}">Next</a>
       {% endif %}
     </div>
-    {% endif %} {% else %}
-    <p style="color: red; text-align: center; font-size: 32px; font-weight: bolder;">No jobs found.</p>
+
     {% endif %}
   </body>
 </html>

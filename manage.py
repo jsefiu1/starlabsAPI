@@ -1,7 +1,15 @@
 from fastapi import FastAPI, Depends, Form, Request, status, Query, Path, WebSocket, HTTPException
 from fastapi.templating import Jinja2Templates
 import uvicorn
-from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, contact
+from app.routers import (
+    telegrafi,
+    gjirafa,
+    kosovajob,
+    express,
+    douglas,
+    ofertasuksesi,
+    home,
+)
 from app.models import Base
 from app.utils.database import engine, SessionLocal, session
 from app.tasks import (
@@ -38,9 +46,7 @@ from httpx import TimeoutException
 import json
 
 
-app = FastAPI(title="StarLabs API")
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
-templates = Jinja2Templates(directory="templates")
+app = FastAPI(title="STARLABS API")
 
 site.mount_app(app)
 
@@ -679,6 +685,7 @@ app.include_router(douglas.router)
 @app.on_event("startup")
 async def startup():
     scheduler.start()
+
 
 Base.metadata.create_all(engine)
 
