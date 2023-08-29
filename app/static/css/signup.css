@@ -1,0 +1,24 @@
+.login,
+.image {
+  min-height: 100vh;
+}
+
+.text {
+  margin-top: 20px;
+}
+
+.icon {
+  font-size: 30px;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.link {
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}

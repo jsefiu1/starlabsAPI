@@ -1,0 +1,61 @@
+.login,
+.image {
+  min-height: 100vh;
+}
+
+.text {
+  margin-top: 20px;
+}
+
+.icon {
+  font-size: 30px;
+}
+
+.link {
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.navigation-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.navigation-link::after {
+  content: "";
+  display: block;
+  height: 4px;
+  width: 100%;
+  background-color: #66d9e8;
+  transform: scale(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+
+.navigation-link:hover::after {
+  transform: scale(1);
+}
+
+.data-text {
+  padding-top: 122px !important;
+}
+
+.input-icon-container input.is-invalid {
+  border-color: #dc3545;
+}
+
+.error {
+  color: #dc3545;
+}
+
+.invalid-feedback {
+  display: none;
+  color: #dc3545;
+}
+
+.input-icon-container input.is-invalid ~ .invalid-feedback {
+  display: block;
+}

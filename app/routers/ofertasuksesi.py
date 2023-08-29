@@ -19,8 +19,9 @@ def get_ofertasuksesi_html(request: Request, page: Optional[int] = Query(1, ge=1
 
     if not offers:
         template = templates.get_template("ofertasuksesi.html")
-        rendered_html = template.render(offers=[], current_page=1, pagination_numbers=range(1, 2), total_pages=1, error_message="Location not found")
-        return rendered_html + "Data not found!"
+        rendered_html = template.render(
+            offers=[], current_page=1, pagination_numbers=range(1, 2), total_pages=1, error_message=True)
+        return rendered_html
 
     start_index = (page - 1) * items_per_page
     end_index = start_index + items_per_page
@@ -51,9 +52,9 @@ def search_offers(
             current_page=1,
             pagination_numbers=range(1, 2),
             total_pages=1,
-            error_message="Location not found"
+            location_error_message=True
         )
-        return rendered_html + "Location not found!"
+        return rendered_html
 
     if not check_offers:
         template = templates.get_template("ofertasuksesi.html")
