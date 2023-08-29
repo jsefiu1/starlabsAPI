@@ -642,10 +642,12 @@ app.include_router(contact.router)
 async def list_contact_messages(
     request: Request,
     db: Session = Depends(get_db),
-    search_query: str = Query(None, title="Search Query"),
+    search_query: str = Query(default="", title="Search Query"),
 ):
     username = get_username_from_request(request)
     user_role = get_current_user_role(request)
+    
+    items_per_page = 5 
 
     query = db.query(Contact)
 
@@ -657,7 +659,6 @@ async def list_contact_messages(
     template_vars = {"contact_messages": contact_messages, "search_query": search_query, "username": username,
                      "user_role": user_role}
     return templates.TemplateResponse("contactmessages.html", {"request": request, **template_vars})
-
 ####
 ###########################################################################################################
 
