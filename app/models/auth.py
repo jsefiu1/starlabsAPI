@@ -50,4 +50,3 @@ class Contact(Base):
     name = Column(String)
     email = Column(String)
     message = Column(String)
-    role = Column(String, default="user")
