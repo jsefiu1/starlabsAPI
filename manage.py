@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, Form, Request, status, Query, Path, WebSocket, HTTPException
 from fastapi.templating import Jinja2Templates
 import uvicorn
-from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, users, contact
+from app.routers import telegrafi, gjirafa, kosovajob, express, douglas, ofertasuksesi, contact
 from app.models import Base
 from app.utils.database import engine, SessionLocal, session
 from app.tasks import (
@@ -19,7 +19,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from fastapi_login import LoginManager
-from app.models.auth import Register, EditLog, ChatMessage, APIKey
+from app.models.auth import Register, EditLog, ChatMessage, APIKey, Contact
 from datetime import timedelta
 from typing import List
 from datetime import datetime
@@ -248,7 +248,6 @@ def data(request: Request, db: Session = Depends(get_db), user: Register = Depen
             {"name": "Douglas", "url": "/douglas/view"},
             {"name": "Kosovajobs", "url": "/kosovajobs/view"},
             {"name": "Express", "url": "/gazetaexpress/view"}
-            # Add more navigation items as needed
         ]
         return templates.TemplateResponse(
             "data.html", {"request": request, "navigation_items": navigation_items, "user": user, "api_key": api_key}
@@ -638,6 +637,26 @@ async def redirect_invalid_api_key(request, exc):
 
 
 app.include_router(contact.router)
+
+@app.get("/contact-messages", response_class=HTMLResponse)
+async def list_contact_messages(
+    request: Request,
+    db: Session = Depends(get_db),
+    search_query: str = Query(None, title="Search Query"),
+):
+    username = get_username_from_request(request)
+    user_role = get_current_user_role(request)
+
+    query = db.query(Contact)
+
+    if search_query:
+        query = query.filter(Contact.name.ilike(f"%{search_query}%") | Contact.email.ilike(f"%{search_query}%"))
+
+    contact_messages = query.all()
+
+    template_vars = {"contact_messages": contact_messages, "search_query": search_query, "username": username,
+                     "user_role": user_role}
+    return templates.TemplateResponse("contactmessages.html", {"request": request, **template_vars})
 
 ####
 ###########################################################################################################
