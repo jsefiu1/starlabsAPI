@@ -451,10 +451,10 @@ def display_logs(
     total_pages = (total_items + items_per_page - 1)
 
     offset = (page - 1) * items_per_page
-    contact_messages = query.offset(offset).limit(items_per_page).all()
+    logs = query.offset(offset).limit(items_per_page).all()
     
     template_vars = {
-    "query": query,
+    "logs": logs,
     "username": username,
     "user_role": user_role,
     "current_page": page,
