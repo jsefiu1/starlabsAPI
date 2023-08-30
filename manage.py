@@ -431,65 +431,46 @@ def delete_user(request: Request, user_id: int):
 
 #######################LOGS##########################################################
 @app.get("/logs", response_class=HTMLResponse)
-def display_logs(
+def display_logs_or_search(
     request: Request, 
     user: Register = Depends(manager),
-    page: int = Query(default=1, title="Page number"),):
-    
+    user_affected: str = Query(None),
+    page: int = Query(default=1, title="Page number"),
+):
     user_role = get_current_user_role(request)
     username = get_username_from_request(request)
-    
+
     if not has_admin_role(request):
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
-    
+
     db = SessionLocal()
     items_per_page = 5 
     
     query = db.query(EditLog)
 
-    total_items = query.count()
+    if user_affected:  # If user_affected is provided, perform a search
+        logs = query.filter(EditLog.edited_user_username == user_affected).all()
+    else: 
+        logs = query.all()
+
+    total_items = len(logs)
     total_pages = (total_items + items_per_page - 1)
 
     offset = (page - 1) * items_per_page
-    logs = query.offset(offset).limit(items_per_page).all()
+    logs_to_display = logs[offset:offset + items_per_page]
     
     template_vars = {
-    "logs": logs,
-    "username": username,
-    "user_role": user_role,
-    "current_page": page,
-    "total_pages": total_pages,
+        "logs": logs_to_display,
+        "user_affected": user_affected,
+        "username": username,
+        "user_role": user_role,
+        "current_page": page,
+        "total_pages": total_pages,
     }
 
     return templates.TemplateResponse("logs.html", {"request": request, **template_vars})
 
 
-@app.get("/search/user_affected", response_class=HTMLResponse)
-def search_logs_by_user_affected(request: Request, user_affected: str = Query(...), user: Register = Depends(manager), page: int = Query(default=1, title="Page number")):
-    user_role = get_current_user_role(request)
-    username = get_username_from_request(request)
-
-    if not has_admin_role(request):
-        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
-
-    db = SessionLocal()
-    logs = db.query(EditLog).filter(EditLog.edited_user_username == user_affected).all()
-    
-    total_items = logs.count()
-    total_pages = (total_items + items_per_page - 1)
-
-    offset = (page - 1) * items_per_page
-    user_affected = query.offset(offset).limit(items_per_page).all()
-    
-    template_vars = {
-    "user_affected": user_affected,
-    "username": username,
-    "user_role": user_role,
-    "current_page": page,
-    "total_pages": total_pages,
-    }
-
-    return templates.TemplateResponse("logs.html", {"request": request, **template_vars})
 
 ####################### OPEN AI ###############################################################
 
