@@ -1,88 +1,87 @@
 {% include "nav.html" %}
-
 <style>
   body {
-font-family: Arial, sans-serif;
-}
-h1 {
-margin-bottom: 20px;
-text-align: center;
-}
-table {
-width: 100%;
-border-collapse: collapse;
-border: 1px solid #ccc;
-}
-th,
-td {
-padding: 10px;
-text-align: left;
-border-bottom: 1px solid #ccc;
-}
-th {
-background-color: #f2f2f2;
-}
-.search-form label {
-margin-right: 10px;
-}
-.search-form input[type="text"],
-.search-form input[type="number"] {
-padding: 8px;
-border: 1px solid #ccc;
-border-radius: 4px;
-}
-.search-form button[type="submit"] {
-padding: 8px 16px;
-color: white;
-border: none;
-border-radius: 4px;
-cursor: pointer;
-}
-.search-form button[type="submit"]:hover {
-background-color: #45a049;
-}
-.pagination {
-margin-top: 20px;
-text-align: center;
-}
-.pagination a {
-display: inline-block;
-margin: 0 5px;
-padding: 8px 12px;
-background-color: #f2f2f2;
-color: #333;
-text-decoration: none;
-border-radius: 4px;
-}
-.pagination a.current {
-background-color: #4caf50;
-color: white;
-}
-.pagination a:hover {
-background-color: #ddd;
-}
-.title {
-max-width: 700px;
-overflow: break-word;
-text-overflow: ellipsis;
-}
+    font-family: Arial, sans-serif;
+  }
+  h1 {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #ccc;
+  }
+  th,
+  td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+  }
+  th {
+    background-color: #f2f2f2;
+  }
+  .search-form label {
+    margin-right: 10px;
+  }
+  .search-form input[type="text"],
+  .search-form input[type="number"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding-top: 80px;
+  }
+  .search-form button[type="submit"] {
+    padding: 8px 16px;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .search-form button[type="submit"]:hover {
+    background-color: #45a049;
+  }
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .pagination a {
+    display: inline-block;
+    margin: 0 5px;
+    padding: 8px 12px;
+    background-color: #f2f2f2;
+    color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+  }
+  .pagination a.bg-primary {
+    color: white;
+  }
+  .pagination a:hover {
+    background-color: #ddd;
+  }
+  .title {
+    max-width: 700px;
+    overflow: break-word;
+    text-overflow: ellipsis;
+  }
 
-.users-container {
-min-height: 120vh;
-}
+  .users-container {
+    min-height: 90vh;
+  }
 
-a.user-managment-btn {
-min-width: 100%;
-}
-    
-.form-control {
-min-width: 300px;
-}
+  a.user-managment-btn {
+    min-width: 100%;
+  }
+        
+  .form-control {
+    min-width: 300px;
+  }
 
 </style>
-
 <div class="container users-container d-flex flex-column justify-content-center align-self-center mb-5 center-container">
-  <form action="/contact-messages" method="get" class="search-form">
+  <form action="/logs" method="get" class="search-form">
     <input type="text" id="search_query" name="search_query" placeholder="Search by name or email" value="{{ search_query }}" required>
     <button type="submit" class="bg-primary">Search</button>
   </form>
