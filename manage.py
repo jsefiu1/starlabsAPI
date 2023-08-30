@@ -431,7 +431,11 @@ def delete_user(request: Request, user_id: int):
 
 #######################LOGS##########################################################
 @app.get("/logs", response_class=HTMLResponse)
-def display_logs(request: Request, page: int = Query(1, alias="page"), user: Register = Depends(manager)):
+def display_logs(
+    request: Request, 
+    user: Register = Depends(manager),
+    page: int = Query(default=1, title="Page number"),):
+    
     user_role = get_current_user_role(request)
     username = get_username_from_request(request)
     
@@ -441,13 +445,24 @@ def display_logs(request: Request, page: int = Query(1, alias="page"), user: Reg
     db = SessionLocal()
     items_per_page = 5 
     
-    logs_query = db.query(EditLog)
-    total_logs = logs_query.count()
-    logs = logs_query.offset((page - 1) * items_per_page).limit(items_per_page).all()
+    query = db.query(EditLog)
+
+    total_items = query.count()
+    total_pages = (total_items + items_per_page - 1)
+
+    offset = (page - 1) * items_per_page
+    contact_messages = query.offset(offset).limit(items_per_page).all()
     
-    total_pages = math.ceil(total_logs / items_per_page)
-    
-    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "user_role": user_role, "username": username, "page": page, "total_pages": total_pages})
+    template_vars = {
+    "query": query,
+    "username": username,
+    "user_role": user_role,
+    "current_page": page,
+    "total_pages": total_pages,
+    }
+
+    return templates.TemplateResponse("logs.html", {"request": request, **template_vars})
+
 
 @app.get("/search/user_affected", response_class=HTMLResponse)
 def search_logs_by_user_affected(request: Request, user_affected: str = Query(...), user: Register = Depends(manager)):
@@ -459,11 +474,22 @@ def search_logs_by_user_affected(request: Request, user_affected: str = Query(..
 
     db = SessionLocal()
     logs = db.query(EditLog).filter(EditLog.edited_user_username == user_affected).all()
-
-    total_pages = 1 
-    page = 1     
     
-    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "user_role": user_role, "username": username, "page": page, "total_pages": total_pages})
+    total_items = logs.count()
+    total_pages = (total_items + items_per_page - 1)
+
+    offset = (page - 1) * items_per_page
+    user_affected = query.offset(offset).limit(items_per_page).all()
+    
+    template_vars = {
+    "user_affected": user_affected,
+    "username": username,
+    "user_role": user_role,
+    "current_page": page,
+    "total_pages": total_pages,
+    }
+
+    return templates.TemplateResponse("logs.html", {"request": request, **template_vars})
 
 ####################### OPEN AI ###############################################################
 
