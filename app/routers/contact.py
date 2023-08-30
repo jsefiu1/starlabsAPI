@@ -20,8 +20,9 @@ async def submit_contact_form(
     contact_entry = Contact(name=name, email=email, message=message)
     db.add(contact_entry)
     db.commit()
+    
 
-    template_vars = {"name": name, "message": message}
+    template_vars = {"name": name, "message": message, "current_page": 1}
     return templates.TemplateResponse("submit_contact_form.html", {"request": request, **template_vars})
 
 
