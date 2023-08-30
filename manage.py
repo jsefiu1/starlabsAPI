@@ -9,6 +9,7 @@ from app.routers import (
     douglas,
     ofertasuksesi,
     home,
+    contact
 )
 from app.models import Base
 from app.utils.database import engine, SessionLocal, session
@@ -48,6 +49,8 @@ import json
 
 app = FastAPI(title="STARLABS API")
 
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+templates = Jinja2Templates(directory="templates")
 site.mount_app(app)
 
 SECRET_KEY = "78a061b526f62f90728cc54090af38cfa8c0228cc81aa2a2"
@@ -644,11 +647,13 @@ async def redirect_invalid_api_key(request, exc):
 
 app.include_router(contact.router)
 
+
 @app.get("/contact-messages", response_class=HTMLResponse)
 async def list_contact_messages(
     request: Request,
     db: Session = Depends(get_db),
     search_query: str = Query(default="", title="Search Query"),
+    page: int = Query(default=1, title="Page number"),
 ):
     username = get_username_from_request(request)
     user_role = get_current_user_role(request)
@@ -660,11 +665,23 @@ async def list_contact_messages(
     if search_query:
         query = query.filter(Contact.name.ilike(f"%{search_query}%") | Contact.email.ilike(f"%{search_query}%"))
 
-    contact_messages = query.all()
+    total_items = query.count()
+    total_pages = (total_items + items_per_page - 1) // items_per_page
 
-    template_vars = {"contact_messages": contact_messages, "search_query": search_query, "username": username,
-                     "user_role": user_role}
+    offset = (page - 1) * items_per_page
+    contact_messages = query.offset(offset).limit(items_per_page).all()
+
+    template_vars = {
+        "contact_messages": contact_messages,
+        "search_query": search_query,
+        "username": username,
+        "user_role": user_role,
+        "current_page": page,
+        "total_pages": total_pages,
+    }
+    
     return templates.TemplateResponse("contactmessages.html", {"request": request, **template_vars})
+
 ####
 ###########################################################################################################
 
