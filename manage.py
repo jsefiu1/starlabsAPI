@@ -465,7 +465,7 @@ def display_logs(
 
 
 @app.get("/search/user_affected", response_class=HTMLResponse)
-def search_logs_by_user_affected(request: Request, user_affected: str = Query(...), user: Register = Depends(manager)):
+def search_logs_by_user_affected(request: Request, user_affected: str = Query(...), user: Register = Depends(manager), page: int = Query(default=1, title="Page number")):
     user_role = get_current_user_role(request)
     username = get_username_from_request(request)
 
