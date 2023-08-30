@@ -451,7 +451,7 @@ def display_logs_or_search(
     if search_query:
         query = query.filter(EditLog.edited_user_username.ilike(f"%{search_query}%") | EditLog.admin_username.ilike(f"%{search_query}%"))
 
-    total_items = len(logs)
+    total_items = query.count()
     total_pages = (total_items + items_per_page - 1)
 
     offset = (page - 1) * items_per_page
@@ -467,8 +467,6 @@ def display_logs_or_search(
     }
 
     return templates.TemplateResponse("logs.html", {"request": request, **template_vars})
-
-
 
 ####################### OPEN AI ###############################################################
 
