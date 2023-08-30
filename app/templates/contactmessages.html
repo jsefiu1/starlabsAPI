@@ -95,6 +95,7 @@
             <th>Name</th>
             <th>Email</th>
             <th>Message</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
@@ -104,6 +105,7 @@
               <td>{{ contact_message.name }}</td>
               <td>{{ contact_message.email }}</td>
               <td class="title">{{ contact_message.message }}</td>
+              <td>{{ contact_message.date.strftime('%d-%m-%Y %H:%M') }}</td>
             </tr>
           {% endfor %}
         </tbody>

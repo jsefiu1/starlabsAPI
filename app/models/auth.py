@@ -44,9 +44,10 @@ class APIKey(Base):
     user = relationship("Register", back_populates="api_keys")
 
 class Contact(Base):
-    __tablename__ = "text"
+    __tablename__ = "contact_messages"
     
     id = Column(Integer, primary_key=True)
     name = Column(String)
     email = Column(String)
     message = Column(String)
+    date = Column(DateTime)

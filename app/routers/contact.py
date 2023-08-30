@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.utils.database import get_db
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-
+from datetime import datetime
 
 router = APIRouter()
 templates = Jinja2Templates(directory="app/templates")
@@ -17,12 +17,13 @@ async def submit_contact_form(
     message: str = Form(...),
     db: Session = Depends(get_db),
 ):
-    contact_entry = Contact(name=name, email=email, message=message)
+    date = datetime.now()
+    contact_entry = Contact(name=name, email=email, message=message, date=date)
     db.add(contact_entry)
     db.commit()
     
 
-    template_vars = {"name": name, "message": message, "current_page": 1}
+    template_vars = {"name": name, "message": message, "current_page": 1, "date":date}
     return templates.TemplateResponse("submit_contact_form.html", {"request": request, **template_vars})
 
 
