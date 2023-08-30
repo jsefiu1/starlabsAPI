@@ -1,0 +1,109 @@
+{% include "base.html" %}
+<style>
+  .star-rating .star {
+    font-size: 24px; 
+    cursor: pointer;
+  }
+
+  .star.hovered,
+  .star.selected {
+    color: #f39c12; 
+  }
+</style>
+</head>
+<body>
+  {% include "nav.html" %}
+  <div class="container mt-5" style="margin-top: 6rem!important">
+    <h1 class="text-center mb-4" style="border-bottom: 5px solid #0dcaf0; margin: 0 auto; display: table;">User Reviews</h1>
+    
+    {% for review in review %}
+    <div class="card mb-3">
+        <div class="card-body">
+        <h5 class="card-title">{{ review.title }}</h5>
+        <p class="card-text">{{ review.content }}</p>
+        <div class="rating">
+            {% for _ in range(review.rating) %}
+                <span class="star">&#9733;</span>
+            {% endfor %}
+        </div>
+        <p class="card-text"><small class="text-muted">By {{ review.user }}</small></p>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#reviewModal">
+      Submit a Review
+    </button>
+    
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="reviewModalLabel">Submit a Review</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form action="/submit-review" method="post">
+              <div class="mb-3">
+                <label for="reviewTitle" class="form-label">Title</label>
+                <input type="text" class="form-control" id="reviewTitle" name="reviewTitle" required>
+              </div>
+              <div class="mb-3">
+                <label for="reviewContent" class="form-label">Content</label>
+                <textarea class="form-control" id="reviewContent" name="reviewContent" rows="4" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="reviewRating" class="form-label">Rating</label>
+                <div class="star-rating" id="reviewRating">
+                  <span class="star stars" data-rating="1">&#9733;</span>
+                  <span class="star stars" data-rating="2">&#9733;</span>
+                  <span class="star stars" data-rating="3">&#9733;</span>
+                  <span class="star stars" data-rating="4">&#9733;</span>
+                  <span class="star stars" data-rating="5">&#9733;</span>
+                </div>
+                <input type="hidden" name="reviewRating" id="selectedRating" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Review</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      const stars = document.querySelectorAll('.star');
+      const selectedRating = document.getElementById('selectedRating');
+    
+      stars.forEach((star, index) => {
+        star.addEventListener('click', () => {
+          const rating = star.getAttribute('data-rating');
+          selectedRating.value = rating;
+          stars.forEach((s, i) => {
+            if (i <= index) {
+              s.classList.add('selected');
+            } else {
+              s.classList.remove('selected');
+            }
+          });
+        });
+
+        star.addEventListener('mouseover', () => {
+          stars.forEach((s, i) => {
+            if (i <= index) {
+              s.classList.add('hovered');
+            } else {
+              s.classList.remove('hovered');
+            }
+          });
+        });
+
+        star.addEventListener('mouseout', () => {
+          stars.forEach(s => {
+            s.classList.remove('hovered');
+          });
+        });
+      });
+    </script>
+  </div>
+  <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>
