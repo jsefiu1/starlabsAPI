@@ -494,14 +494,17 @@ async def custom_chat(user_input: str = Form(...)):
             )
             response_data = response.json()
 
-        chatgpt_reply = response_data["choices"][0]["message"]["content"]
-        messages.append({"role": "assistant", "content": chatgpt_reply})
-
-        return {"response": chatgpt_reply}
+        if "choices" in response_data and len(response_data["choices"]) > 0:
+            chatgpt_reply = response_data["choices"][0]["message"]["content"]
+            messages.append({"role": "assistant", "content": chatgpt_reply})
+            return {"response": chatgpt_reply}
+        else:
+            return {"response": "No valid response from the model"}
 
     except (httpx.RequestError, TimeoutException, json.JSONDecodeError) as e:
         error_message = "An error occurred while processing the request: " + str(e)
         return {"error": error_message}
+
     
     
     
