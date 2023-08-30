@@ -433,8 +433,9 @@ def delete_user(request: Request, user_id: int):
 @app.get("/logs", response_class=HTMLResponse)
 def display_logs_or_search(
     request: Request, 
+    db: Session = Depends(get_db),
     user: Register = Depends(manager),
-    user_affected: str = Query(None),
+    search_query: str = Query(default="", title="Search Query"),
     page: int = Query(default=1, title="Page number"),
 ):
     user_role = get_current_user_role(request)
@@ -443,25 +444,22 @@ def display_logs_or_search(
     if not has_admin_role(request):
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
-    db = SessionLocal()
     items_per_page = 5 
     
     query = db.query(EditLog)
 
-    if user_affected:  # If user_affected is provided, perform a search
-        logs = query.filter(EditLog.edited_user_username == user_affected).all()
-    else: 
-        logs = query.all()
+    if search_query:
+        query = query.filter(EditLog.edited_user_username.ilike(f"%{search_query}%") | EditLog.admin_username.ilike(f"%{search_query}%"))
 
     total_items = len(logs)
     total_pages = (total_items + items_per_page - 1)
 
     offset = (page - 1) * items_per_page
-    logs_to_display = logs[offset:offset + items_per_page]
+    logs = query.offset(offset).limit(items_per_page).all()
     
     template_vars = {
-        "logs": logs_to_display,
-        "user_affected": user_affected,
+        "logs": logs,
+        "search_query": search_query,
         "username": username,
         "user_role": user_role,
         "current_page": page,
