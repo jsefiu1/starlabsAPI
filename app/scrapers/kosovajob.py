@@ -12,8 +12,8 @@ class KosovajobScraper(Scraper):
         super().__init__(base_url)
 
     def scrape(self):
-        current_date = datetime.now()
-        date_of_scrape = current_date.strftime("%d/%m/%Y %H:%M")
+        current_date = date.today()
+        date_of_scrape = current_date.strftime("%d/%m/%Y")
         results = []
         response = requests.get(self.base_url)
         soup = BeautifulSoup(response.content, "html.parser")
