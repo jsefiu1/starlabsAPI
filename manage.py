@@ -440,39 +440,42 @@ def delete_user(request: Request, user_id: int):
 
 #######################LOGS##########################################################
 @app.get("/logs", response_class=HTMLResponse)
-def display_logs(request: Request, page: int = Query(1, alias="page"), user: Register = Depends(manager)):
+def display_logs_or_search(
+    request: Request, 
+    db: Session = Depends(get_db),
+    user: Register = Depends(manager),
+    search_query: str = Query(default="", title="Search Query"),
+    page: int = Query(default=1, title="Page number"),
+):
     user_role = get_current_user_role(request)
     username = get_username_from_request(request)
-    
+
     if not has_admin_role(request):
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
-    
-    db = SessionLocal()
+
     items_per_page = 5 
     
-    logs_query = db.query(EditLog)
-    total_logs = logs_query.count()
-    logs = logs_query.offset((page - 1) * items_per_page).limit(items_per_page).all()
+    query = db.query(EditLog)
+
+    if search_query:
+        query = query.filter(EditLog.edited_user_username.ilike(f"%{search_query}%") | EditLog.admin_username.ilike(f"%{search_query}%"))
+
+    total_items = query.count()
+    total_pages = (total_items + items_per_page - 1)
+
+    offset = (page - 1) * items_per_page
+    logs = query.offset(offset).limit(items_per_page).all()
     
-    total_pages = math.ceil(total_logs / items_per_page)
-    
-    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "user_role": user_role, "username": username, "page": page, "total_pages": total_pages})
+    template_vars = {
+        "logs": logs,
+        "search_query": search_query,
+        "username": username,
+        "user_role": user_role,
+        "current_page": page,
+        "total_pages": total_pages,
+    }
 
-@app.get("/search/user_affected", response_class=HTMLResponse)
-def search_logs_by_user_affected(request: Request, user_affected: str = Query(...), user: Register = Depends(manager)):
-    user_role = get_current_user_role(request)
-    username = get_username_from_request(request)
-
-    if not has_admin_role(request):
-        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
-
-    db = SessionLocal()
-    logs = db.query(EditLog).filter(EditLog.edited_user_username == user_affected).all()
-
-    total_pages = 1 
-    page = 1     
-    
-    return templates.TemplateResponse("logs.html", {"request": request, "logs": logs, "user_role": user_role, "username": username, "page": page, "total_pages": total_pages})
+    return templates.TemplateResponse("logs.html", {"request": request, **template_vars})
 
 ####################### OPEN AI ###############################################################
 
@@ -503,14 +506,17 @@ async def custom_chat(user_input: str = Form(...)):
             )
             response_data = response.json()
 
-        chatgpt_reply = response_data["choices"][0]["message"]["content"]
-        messages.append({"role": "assistant", "content": chatgpt_reply})
-
-        return {"response": chatgpt_reply}
+        if "choices" in response_data and len(response_data["choices"]) > 0:
+            chatgpt_reply = response_data["choices"][0]["message"]["content"]
+            messages.append({"role": "assistant", "content": chatgpt_reply})
+            return {"response": chatgpt_reply}
+        else:
+            return {"response": "No valid response from the model"}
 
     except (httpx.RequestError, TimeoutException, json.JSONDecodeError) as e:
         error_message = "An error occurred while processing the request: " + str(e)
         return {"error": error_message}
+
     
     
     

@@ -78,6 +78,7 @@
                     </p>
                   </div>
                   <button type="submit" class="btn btn-outline-primary text-uppercase mb-2 rounded-pill shadow-sm">Register</button>
+                  <div id="validationErrors" class="text-danger"></div>
                 </form>
                 {% if username_exists %}
                   <p style="color: #eb4823;">This username already exists!!</p>
@@ -93,7 +94,26 @@
       </div>
     </div>
   </div>
-
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const registrationForm = document.querySelector(".needs-validation");
+    
+      registrationForm.addEventListener("submit", function (event) {
+        if (!registrationForm.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+          displayValidationErrors();
+        }
+        registrationForm.classList.add("was-validated");
+      });
+    
+      function displayValidationErrors() {
+        const validationErrors = document.getElementById("validationErrors");
+        validationErrors.innerHTML = "Please fill out all required fields correctly.";
+      }
+    });
+    
+  </script>
   <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
   <script src="https://unpkg.com/typewriter-effect/dist/core.js"></script>
   <script src="{{ url_for('static', path='/js/script.js') }}"></script>
