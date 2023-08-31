@@ -461,7 +461,8 @@ def display_logs_or_search(
         query = query.filter(EditLog.edited_user_username.ilike(f"%{search_query}%") | EditLog.admin_username.ilike(f"%{search_query}%"))
 
     total_items = query.count()
-    total_pages = (total_items + items_per_page - 1)
+    total_pages = (total_items + items_per_page - 1) // items_per_page
+
 
     offset = (page - 1) * items_per_page
     logs = query.offset(offset).limit(items_per_page).all()
