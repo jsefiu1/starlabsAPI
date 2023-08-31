@@ -659,12 +659,16 @@ app.include_router(contact.router)
 async def list_contact_messages(
     request: Request,
     db: Session = Depends(get_db),
+    user: Register = Depends(manager),
     search_query: str = Query(default="", title="Search Query"),
     page: int = Query(default=1, title="Page number"),
 ):
     username = get_username_from_request(request)
     user_role = get_current_user_role(request)
     
+    if not has_admin_role(request):
+        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)  
+        
     items_per_page = 5 
 
     query = db.query(Contact)
