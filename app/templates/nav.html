@@ -15,10 +15,10 @@
             <a href="/" class="nav-link navigation-link">Home</a>
           </li>
           <li class="nav-item">
-            <a href="#about" class="nav-link navigation-link">About</a>
+            <a href="/#about" class="nav-link navigation-link">About</a>
           </li>
           <li class="nav-item">
-            <a href="#services" class="nav-link navigation-link">Services</a>
+            <a href="/#services" class="nav-link navigation-link">Services</a>
           </li>
           {% if request.cookies.get("auth") != "None" and request.cookies.get("auth") %}
           <li class="nav-item">
@@ -26,6 +26,9 @@
           </li>
           <li class="nav-item">
             <a href="/generate-api-key" class="nav-link navigation-link">API Key</a>
+          </li>
+          <li class="nav-item">
+            <a href="/review" class="nav-link navigation-link">Reviews</a>
           </li>
           {% endif %}
         </ul>

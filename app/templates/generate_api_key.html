@@ -3,14 +3,13 @@
 <link rel="stylesheet" href="static/css/generate_api_key.css">
 
 <body>
-    <div>
-        <h1>Generate API Key</h1>
-        <p>Click the button below to generate an API key.</p>
-        
-        <button id="generate-button">Generate API Key</button>
-        
-        <h2>Your Generated API Key:</h2>
-        <p id="api-key">{{ api_key }}</p>
+    <div class="container d-flex justify-content-center align-items-center vh-100">
+        <div class="text-center">
+            <p>Click the button below to generate an API key.</p>
+            <button id="generate-button" class="btn btn-primary">Generate API Key</button>
+            <h2>Your Generated API Key:</h2>
+            <p id="api-key">{{ api_key }}</p>
+        </div>
     </div>
 
 <script>

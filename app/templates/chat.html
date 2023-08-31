@@ -1,13 +1,17 @@
 {% include "base.html" %}
 {% include "nav.html" %}
-    <link rel="stylesheet" href="static/css/chat.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', path='/css/chat.css') }}">
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-messages" id="chat-messages"></div>
-        <div class="input-container">
-            <input type="text" id="user-input" placeholder="Enter your message">
-            <button id="send-button">Send</button>
+    <div class="container d-flex justify-content-center align-items-center vh-100 pt-5">
+        <div class="chat-container">
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="input-container">
+                <input type="text" id="user-input" class="form-control" placeholder="Enter your message">
+                <button id="send-button" class="btn btn-primary">Send</button>
+            </div>
         </div>
     </div>
     <script src="static/js/chat.js"></script>
