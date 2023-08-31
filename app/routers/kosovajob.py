@@ -8,17 +8,16 @@ from fastapi.templating import Jinja2Templates
 from typing import Optional
 from math import ceil
 
-router = APIRouter(
-    prefix="/kosovajobs",
-)
+router=APIRouter(
+    prefix='/kosovajobs',)
 templates = Jinja2Templates(directory="app/templates")
 
 
-@router.post("/scrape")
+@router.post('/scrape')
 def scrape_and_insert():
-    kosovajob_scraper = KosovajobScraper(base_url="https://kosovajob.com/")
+    kosovajob_scraper = KosovajobScraper(base_url='https://kosovajob.com/')
     results = kosovajob_scraper.scrape()
-    kosovajob_scraper.save_to_db(results=results, session=session)
+    kosovajob_scraper.save_to_db(results=results,session=session)
     return results
 
 
