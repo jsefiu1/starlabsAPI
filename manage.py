@@ -28,7 +28,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from fastapi_login import LoginManager
-from app.models.auth import Register, EditLog, ChatMessage, APIKey, Contact
+from app.models.auth import Register, EditLog, ChatMessage, APIKey, Contact, Review
 from datetime import timedelta
 from typing import List
 from datetime import datetime
@@ -690,6 +690,38 @@ async def list_contact_messages(
 
 ####
 ###########################################################################################################
+
+
+@app.get("/review", response_class=HTMLResponse)
+def reviews_list(request: Request, user: Register = Depends(manager)):
+    db = SessionLocal()
+    review = db.query(Review).all()
+    username = get_username_from_request(request)
+    user_role = get_current_user_role(request)
+    return templates.TemplateResponse(
+        "review.html", {"request": request, "review": review, "username": username, "user_role": user_role}
+    )
+
+@app.post("/submit-review", response_class=RedirectResponse)
+def submit_review(
+    request: Request,
+    reviewTitle: str = Form(...),
+    reviewContent: str = Form(...),
+    reviewRating: str = Form(...),
+    user: Register = Depends(manager)
+):
+    
+    db = SessionLocal()
+    username = get_username_from_request(request)
+    new_review = Review(title=reviewTitle, content=reviewContent, user=username, rating=reviewRating)
+
+    db.add(new_review)
+
+    db.commit()
+
+    return RedirectResponse("/review", status_code=status.HTTP_302_FOUND)
+
+
 
 @app.get("/logout", response_class=RedirectResponse)
 def logout():

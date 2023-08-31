@@ -51,3 +51,12 @@ class Contact(Base):
     email = Column(String)
     message = Column(String)
     date = Column(DateTime)
+
+class Review(Base):
+    __tablename__ = "review"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String, index=True)
+    content = Column(String)
+    user = Column(String)
+    rating = Column(Integer)

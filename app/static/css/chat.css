@@ -19,7 +19,7 @@ body {
   display: flex;
   flex-direction: column;
   position: relative;
-  height: 100vh; 
+  height: 69vh; 
 }
 
 .chat-messages {
@@ -27,12 +27,13 @@ body {
   overflow-y: auto;
   height: calc(100vh - 120px);
   margin-top: 10px;
-  max-height: 60vh; /
+  max-height: 60vh; 
 }
 .message {
   padding: 10px;
   border-radius: 5px;
   margin: 5px;
+  margin-bottom: 10px;
 }
 
 .user {
