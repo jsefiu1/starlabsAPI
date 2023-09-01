@@ -45,7 +45,7 @@
               </button>
             </div>
             <div class="modal-body">
-            <form method="post" action="/submit_contact_form">
+            <form method="post" action="/submit_contact_form" class="needs-validation">
                 <div class="form-group">
                     <label for="name">Name</label>
                     <input type="text" class="form-control" id="name" name="name" placeholder="Enter your name">
@@ -62,13 +62,46 @@
                   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                   <button type="submit" class="btn btn-primary">Send</button>
                 </div>
+                <div id="validationErrors" class="text-danger"></div>
             </form>     
             </div>
           </div>
         </div>
       </div> 
-    </footer>    
-       
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const contactForm = document.querySelector(".needs-validation");
+          
+          contactForm.addEventListener("submit", function (event) {
+            if (!validateForm()) {
+              event.preventDefault();
+            }
+          });
+          
+          function validateForm() {
+            const name = document.getElementById("name").value.trim();
+            const email = document.getElementById("email").value.trim();
+            const message = document.getElementById("message").value.trim();
+            const validationErrors = document.getElementById("validationErrors");
+      
+            validationErrors.innerHTML = "";
+      
+            if (name === "" || email === "" || message === "") {
+              validationErrors.innerHTML = "Please fill out all required fields.";
+              return false;
+            }
+      
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+            if (!emailPattern.test(email)) {
+              validationErrors.innerHTML = "Please enter a valid email address.";
+              return false;
+            }
+          
+            return true;
+          }
+        });
+      </script>
+    </footer>           
     <style>
       .footer {
         padding-top: 10px;
