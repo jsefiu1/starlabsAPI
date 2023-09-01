@@ -67,7 +67,7 @@
   }
 
   .users-container {
-    min-height: 90vh;
+    min-height: 80vh;
   }
 
   a.user-managment-btn {
@@ -79,8 +79,8 @@
   }
 
 </style>
-<div class="container users-container d-flex flex-column justify-content-center align-self-center mb-5 center-container">
-  <form action="/logs" method="get" class="search-form">
+<div class="container users-container d-flex flex-column justify-content-center align-self-center pt-5 center-container">
+  <form action="/logs" method="get" class="search-form pt-5">
     <input type="text" id="search_query" name="search_query" placeholder="Search by name or email" value="{{ search_query }}" required>
     <button type="submit" class="bg-primary">Search</button>
   </form>
