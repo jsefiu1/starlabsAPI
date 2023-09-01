@@ -11,15 +11,6 @@
   
       <div class="collapse navbar-collapse fw-bolder" id="navbar">
         <ul class="navbar-nav ms-auto my-3 my-md-0">
-            <!-- <li class="nav-item">
-              <a href="/#home" class="nav-link navigation-link">Home</a>
-            </li>
-            <li class="nav-item">
-              <a href="/#about" class="nav-link navigation-link">About</a>
-            </li>
-            <li class="nav-item">
-              <a href="/#services" class="nav-link navigation-link">Services</a>
-            </li> -->
             {% if request.cookies.get("auth") != "None" and request.cookies.get("auth") %}
               {% if username %}
                 <li class="nav-item">

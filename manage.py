@@ -432,9 +432,7 @@ def change_role(request: Request, user_id: int ,user: Register = Depends(manager
     username = get_username_from_request(request)
     user_role = get_current_user_role(request)
     if db_user:
-        print("KA MRRI TE QEKY KUSHT!!!")
         if db_user.role == "admin":
-            print("KA MRRI  QITU!!!")
             db_user.role = "user"
             db.commit()
             db.refresh(db_user)
