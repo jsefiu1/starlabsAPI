@@ -47,7 +47,7 @@
       .search-form button[type="submit"]:hover {
         background-color: #45a049;
       }
-      .pagination {
+      /* .pagination {
         margin-top: 20px;
         text-align: center;
       }
@@ -66,7 +66,7 @@
       }
       .pagination a:hover {
         background-color: #ddd;
-      }
+      } */
       .title {
         max-width: 700px;
         overflow: break-word;
@@ -83,6 +83,14 @@
             
       .form-control {
         min-width: 300px;
+      }
+
+      .custom-btn {
+        background-color: #dee2e6 !important;
+      }
+
+      .custom-btn:hover {
+        background-color: #ced4da !important;
       }
 
   </style>
@@ -122,6 +130,39 @@
         </tbody>
       </table>
     </div>
+
+    {% if total_pages > 1 %}      
+        <div class="pagination d-flex align-self-center">
+          {% if page > 1 %}
+            <a href="/users?page={{ page - 1 }}" class="btn btn-primary text-decoration-none text-light">Previous</a>
+          {% endif %}
+          
+          <a href="/users?page=1" class="{{ 'btn btn-primary text-decoration-none text-light mx-2' if page == 1 else 'custom-btn btn text-decoration-none text-dark mx-2' }}">1</a>
+          
+          {% if page > 4 %}
+            <span class="mx-2">...</span>
+            <a href="/users?page={{ page - 2 }}" class="{{ 'btn btn-primary text-decoration-none text-light mx-2' if page == 1 else 'custom-btn btn text-decoration-none text-dark mx-2' }}">{{ page - 2 }}</a>
+          {% endif %}
+          
+          {% set start_page = page - 1 if page > 4 else 2 %}
+          {% set end_page = page + 2 if page < total_pages - 2 else total_pages - 1 %}
+          
+          {% for p in range(start_page, end_page + 1) %}
+            <a href="/users?page={{ p }}" class="{{ 'btn btn-primary text-decoration-none text-light mx-2' if p == page else 'custom-btn btn text-decoration-none text-dark mx-2' }}">{{ p }}</a>
+          {% endfor %}
+          
+          {% if page < total_pages - 3 %}
+            <span class="mx-2">...</span>
+          {% endif %}
+
+          <a href="/users?page={{ total_pages }}" class="{{ 'btn btn-primary text-decoration-none text-light mx-2' if page == total_pages else 'custom-btn btn text-decoration-none text-dark mx-2' }}">{{ total_pages }}</a>
+          
+          {% if page < total_pages %}
+            <a href="/users?page={{ page + 1 }}" class="btn btn-primary text-decoration-none">Next</a>
+          {% endif %}
+        </div>
+      {% endif %}
+
   </div>
   <script src="{{ url_for('static', path='/js/bootstrap.bundle.min.js') }}"></script>
 </body>
