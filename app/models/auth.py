@@ -15,7 +15,7 @@ class Register(Base):
     password = Column(String)
     role = Column(String, default="user")
     messages = relationship("ChatMessage", back_populates="user")
-    api_keys = relationship("APIKey", back_populates="user")  
+    api_keys = relationship("APIKey", back_populates="user")
 
 class EditLog(Base):
     __tablename__ = 'edit_logs'
