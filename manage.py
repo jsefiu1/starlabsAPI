@@ -291,7 +291,7 @@ def list_users(request: Request, page: int = 1, user: Register = Depends(manager
         return templates.TemplateResponse("users.html", {"request": request, "users": users, "page": page, "total_pages": total_pages, 
                                                         "user": user, "user_role": user_role, "username": username})
     else:
-        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+        return templates.TemplateResponse("404-error.html", {"request": request})
 
 @app.post("/search", response_class=RedirectResponse)
 def search_user(search_username: str = Form(...), user: Register = Depends(manager)):
@@ -311,7 +311,7 @@ def search_user_by_username(request: Request, search_username: str = Path(...), 
         return templates.TemplateResponse("search.html", {"request": request, "user_name": 
                                         user_name, "username": username, "user": user, "user_role": user_role})
     else:
-        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+        return templates.TemplateResponse("404-error.html", {"request": request})
     
     
 #################################################################################################################
@@ -389,7 +389,7 @@ def edit_user(request: Request, user_id: int, user: Register = Depends(manager))
         return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
                                 "db_user": db_user, "user": user, "user_role": user_role})
     else:
-        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+        return templates.TemplateResponse("404-error.html", {"request": request})
 
 @app.post("/users/edit-user/{user_id}")
 def save_edit(user_id: int, request: Request, user: Register = Depends(manager),
@@ -420,7 +420,7 @@ def save_edit(user_id: int, request: Request, user: Register = Depends(manager),
             return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
                             "db_user": db_user,"user": user, "success_message": True, "user_role": user_role})
     else:
-        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+        return templates.TemplateResponse("404-error.html", {"request": request})
     
     return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
                                     "user": user,"success_message": False, "user_role": user_role})
@@ -470,7 +470,7 @@ def delete_user(request: Request, user_id: int):
 
         return RedirectResponse("/users")
     else:
-        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+        return templates.TemplateResponse("404-error.html", {"request": request})
 
 #######################LOGS##########################################################
 @app.get("/logs", response_class=HTMLResponse)
@@ -485,7 +485,7 @@ def display_logs_or_search(
     username = get_username_from_request(request)
 
     if not has_admin_role(request):
-        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+        return templates.TemplateResponse("404-error.html", {"request": request})
 
     items_per_page = 5 
     
@@ -608,7 +608,7 @@ async def message(request: Request,  user: Register = Depends(manager)):
     username = get_username_from_request(request)
     user_role = get_current_user_role(request)    
     if not has_admin_role(request):
-        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+        return templates.TemplateResponse("404-error.html", {"request": request})
     return templates.TemplateResponse("messages.html", {"request": request, "username": username, "user_role": user_role})
 
 
@@ -634,7 +634,7 @@ async def get_messages(username: str = Depends(get_username_from_request), db: S
         raise HTTPException(status_code=500, detail="An error occurred while retrieving messages")
 
 #################################################################################################################
-########## GENERATE API KEY #############
+                                    ########## GENERATE API KEY #############
 
 @app.get("/generate-api-key", response_class=HTMLResponse)
 async def generate_api_key_html(request: Request, user: Register = Depends(manager)):
@@ -701,7 +701,7 @@ async def list_contact_messages(
     user_role = get_current_user_role(request)
     
     if not has_admin_role(request):
-        return RedirectResponse("/", status_code=status.HTTP_302_FOUND)  
+        return templates.TemplateResponse("404-error.html", {"request": request})
         
     items_per_page = 5 
 
@@ -759,7 +759,6 @@ def submit_review(
     db.commit()
 
     return RedirectResponse("/review", status_code=status.HTTP_302_FOUND)
-
 
 
 @app.get("/logout", response_class=RedirectResponse)
