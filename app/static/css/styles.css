@@ -60,3 +60,8 @@
   display: block;
 }
 
+.change-role-btn {
+  position: relative;
+  bottom: 53.9px;
+  left: 130px;
+}

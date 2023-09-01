@@ -187,7 +187,7 @@ def show_login_form(request: Request):
         response.delete_cookie("login_redirect")
         return response
     
-    elif request.cookies.get("auth") != "None" and request.cookies.get("auth"):
+    elif request.cookies.get("auth") != "None" and request.cookies.get("auth") != "" and request.cookies.get("auth") != None:
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
     
     return templates.TemplateResponse("login.html", {"request": request}, status_code=status.HTTP_200_OK)
@@ -267,21 +267,29 @@ def data(request: Request, db: Session = Depends(get_db), user: Register = Depen
         
 @app.get("/", response_class=HTMLResponse)
 def home(request: Request):
+    print(request.cookies.get("auth"))
     username = get_username_from_request(request)
     user_role = get_current_user_role(request)
     return templates.TemplateResponse("home.html", {"request": request, "username": username, 
                                 "user_role": user_role})
 
 #########################USERS#####################################################
-@app.get("/users", response_class=HTMLResponse)
-def read_users(request: Request, user: Register =  Depends(manager)):
-    username = get_username_from_request(request)
+@app.get("/users")
+def list_users(request: Request, page: int = 1, user: Register = Depends(manager)):
+    items_per_page = 5
     db = SessionLocal()
-    users = db.query(Register).all()
+    total_users = db.query(Register).count()
+    total_pages = (total_users + items_per_page - 1) // items_per_page
+
+    if page < 1 or page > total_pages:
+        raise HTTPException(status_code=404, detail="Page not found")
+
+    users = db.query(Register).offset((page - 1) * items_per_page).limit(items_per_page).all()
     user_role = get_current_user_role(request)
+    username = get_username_from_request(request)
     if has_admin_role(request):
-        return templates.TemplateResponse("users.html", {"request": request, "users": users, 
-                                    "username": username, "user": user, "user_role": user_role})
+        return templates.TemplateResponse("users.html", {"request": request, "users": users, "page": page, "total_pages": total_pages, 
+                                                        "user": user, "user_role": user_role, "username": username})
     else:
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
 
@@ -304,6 +312,8 @@ def search_user_by_username(request: Request, search_username: str = Path(...), 
                                         user_name, "username": username, "user": user, "user_role": user_role})
     else:
         return RedirectResponse("/", status_code=status.HTTP_302_FOUND)
+    
+    
 #################################################################################################################
 @app.get("/profile", response_class=HTMLResponse)
 def user_profile(request: Request, user: Register = Depends(manager), user_data: dict = Depends(get_current_user_data)):
@@ -415,6 +425,30 @@ def save_edit(user_id: int, request: Request, user: Register = Depends(manager),
     return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
                                     "user": user,"success_message": False, "user_role": user_role})
     
+@app.post("/users/edit-user/change-role/{user_id}")
+def change_role(request: Request, user_id: int ,user: Register = Depends(manager)):
+    db = SessionLocal()
+    db_user = db.query(Register).filter(Register.id == user_id).first()
+    username = get_username_from_request(request)
+    user_role = get_current_user_role(request)
+    if db_user:
+        print("KA MRRI TE QEKY KUSHT!!!")
+        if db_user.role == "admin":
+            print("KA MRRI  QITU!!!")
+            db_user.role = "user"
+            db.commit()
+            db.refresh(db_user)
+            return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
+                                    "user": user,"success_message": True, "user_role": user_role, "db_user": db_user})
+        else:
+            db_user.role = "admin"
+            db.commit()
+            db.refresh(db_user)
+            return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
+                                        "user": user,"success_message": True, "user_role": user_role, "db_user": db_user})
+
+    return templates.TemplateResponse("edit_user.html", {"request": request, "username": username, 
+                                    "user": user, "user_role": user_role, "db_user": db_user})
 
 @app.get("/delete/{user_id}")
 def delete_user(request: Request, user_id: int):
@@ -612,7 +646,7 @@ async def generate_api_key_html(request: Request, user: Register = Depends(manag
     if api_key_entry:
         api_key = api_key_entry.key
     else:
-        api_key = "API key not found"
+        api_key = "Ready to generate"
     
     user_role = get_current_user_role(request)       
     
@@ -734,6 +768,9 @@ def logout():
     manager.set_cookie(response, None)
     return response
 
+@app.exception_handler(404)
+async def custom_404_handler(request: Request, __):
+    return templates.TemplateResponse("404-error.html", {"request": request})
 
 app.include_router(gjirafa.router)
 app.include_router(telegrafi.router)

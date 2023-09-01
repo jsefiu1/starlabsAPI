@@ -11,26 +11,28 @@
   
       <div class="collapse navbar-collapse fw-bolder" id="navbar">
         <ul class="navbar-nav ms-auto my-3 my-md-0">
-          <li class="nav-item">
-            <a href="/" class="nav-link navigation-link">Home</a>
-          </li>
-          <li class="nav-item">
-            <a href="/#about" class="nav-link navigation-link">About</a>
-          </li>
-          <li class="nav-item">
-            <a href="/#services" class="nav-link navigation-link">Services</a>
-          </li>
-          {% if request.cookies.get("auth") != "None" and request.cookies.get("auth") %}
-          <li class="nav-item">
-            <a href="/chat" class="nav-link navigation-link">ChatBot</a>
-          </li>
-          <li class="nav-item">
-            <a href="/generate-api-key" class="nav-link navigation-link">API Key</a>
-          </li>
-          <li class="nav-item">
-            <a href="/review" class="nav-link navigation-link">Reviews</a>
-          </li>
-          {% endif %}
+            <li class="nav-item">
+              <a href="/#home" class="nav-link navigation-link">Home</a>
+            </li>
+            <li class="nav-item">
+              <a href="/#about" class="nav-link navigation-link">About</a>
+            </li>
+            <li class="nav-item">
+              <a href="/#services" class="nav-link navigation-link">Services</a>
+            </li>
+            {% if request.cookies.get("auth") != "None" and request.cookies.get("auth") %}
+              {% if username %}
+                <li class="nav-item">
+                  <a href="/chat" class="nav-link navigation-link">ChatBot</a>
+                </li>
+                <li class="nav-item">
+                  <a href="/generate-api-key" class="nav-link navigation-link">API Key</a>
+                </li>
+                <li class="nav-item">
+                  <a href="/review" class="nav-link navigation-link">Reviews</a>
+                </li>
+              {% endif %}
+            {% endif %}
         </ul>
   
         <ul class="navbar-nav ms-auto my-3 my-md-0">
@@ -45,21 +47,30 @@
             </li>
           {% endif %}
           {% if request.cookies.get("auth") != "None" and request.cookies.get("auth") %}
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                {{ username }}
-              </a>
-              <ul class="dropdown-menu">
-                <li><a class="dropdown-item" href="/profile">Profile</a></li>
-                {% if user_role.role == "admin" %}
-                  <li><a class="dropdown-item" href="/users">User managment</a></li>
-                  <li><a class="dropdown-item" href="/logs">Logs</a></li>
-                  <li><a class="dropdown-item" href="/messages">Messages</a></li>
-                  <li><a class="dropdown-item" href="/contact-messages">Contact M..</a></li>
-                {% endif %}
-                <li><a class="dropdown-item" href="/logout">Log out</a></li>
-              </ul>
-            </li>
+            {% if username %}
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                  {{ username }}
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="/profile">Profile</a></li>
+                  {% if user_role.role == "admin" %}
+                    <li><a class="dropdown-item" href="/users">User managment</a></li>
+                    <li><a class="dropdown-item" href="/logs">Logs</a></li>
+                    <li><a class="dropdown-item" href="/messages">Messages</a></li>
+                    <li><a class="dropdown-item" href="/contact-messages">Contact M..</a></li>
+                  {% endif %}
+                  <li><a class="dropdown-item" href="/logout">Log out</a></li>
+                </ul>
+              </li>
+            {% else %}
+              <li class="nav-item">
+                <a href="/login" class="nav-link navigation-link">Log in</a>
+              </li>
+              <li class="nav-item">
+                <a href="/register" class="nav-link navigation-link">Register</a>
+              </li>
+            {% endif %}
           {% endif %}
         </ul>
       </div>
